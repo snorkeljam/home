@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WOL On The Go — Project Hub</title>
+  <style>
+    :root {
+      --bg: #0f1117;
+      --surface: #1a1d27;
+      --border: #2a2d3a;
+      --accent: #6c63ff;
+      --accent2: #00c9a7;
+      --text: #e8eaf0;
+      --muted: #8b90a0;
+      --tag-bg: #232636;
+      --radius: 12px;
+      --gap: 18px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      min-height: 100vh;
+      padding: 40px 24px 80px;
+    }
+
+    header {
+      max-width: 1100px;
+      margin: 0 auto 48px;
+    }
+
+    .logo {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 10px;
+    }
+
+    h1 {
+      font-size: clamp(28px, 4vw, 44px);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      line-height: 1.15;
+      color: var(--text);
+    }
+
+    .subtitle {
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 15px;
+    }
+
+    .updated {
+      display: inline-block;
+      margin-top: 14px;
+      padding: 4px 12px;
+      background: var(--tag-bg);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .grid {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: var(--gap);
+    }
+
+    .section-label {
+      max-width: 1100px;
+      margin: 36px auto 14px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--muted);
+      padding-left: 2px;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 22px 22px 20px;
+      text-decoration: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      transition: border-color 0.18s, transform 0.15s, box-shadow 0.18s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: var(--card-accent, var(--accent));
+      border-radius: var(--radius) var(--radius) 0 0;
+    }
+
+    .card:hover {
+      border-color: var(--card-accent, var(--accent));
+      transform: translateY(-3px);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.35);
+    }
+
+    .card-icon {
+      font-size: 26px;
+      line-height: 1;
+    }
+
+    .card-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1.3;
+    }
+
+    .card-desc {
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .card-tag {
+      display: inline-block;
+      margin-top: 4px;
+      padding: 3px 9px;
+      background: var(--tag-bg);
+      border-radius: 6px;
+      font-size: 11px;
+      color: var(--muted);
+      font-weight: 500;
+      border: 1px solid var(--border);
+      align-self: flex-start;
+    }
+
+    .divider {
+      max-width: 1100px;
+      margin: 0 auto;
+      border: none;
+      border-top: 1px solid var(--border);
+      margin-top: 48px;
+    }
+
+    footer {
+      max-width: 1100px;
+      margin: 20px auto 0;
+      font-size: 12px;
+      color: var(--muted);
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">WOL On The Go</div>
+  <h1>Project Hub</h1>
+  <p class="subtitle">All your living sites, prototypes, and tools — one click away.</p>
+  <span class="updated">Last updated: April 20, 2026</span>
+</header>
+
+
+<!-- ─── ACR Roots ─────────────────────────────────────────── -->
+<p class="section-label">ACR Roots</p>
+<div class="grid">
+
+  <a class="card" href="ACR Roots/index.html" style="--card-accent:#f59e0b;">
+    <span class="card-icon">🌳</span>
+    <span class="card-title">ACR Roots — Main</span>
+    <span class="card-desc">Primary index for the ACR Roots community tree project.</span>
+    <span class="card-tag">index</span>
+  </a>
+
+  <a class="card" href="ACR Roots/roots-prototype-standalone.html" style="--card-accent:#f59e0b;">
+    <span class="card-icon">🧪</span>
+    <span class="card-title">Roots Prototype (Standalone)</span>
+    <span class="card-desc">Self-contained prototype for the ACR Roots experience.</span>
+    <span class="card-tag">prototype</span>
+  </a>
+
+  <a class="card" href="ACR Roots/roots-prototype.html" style="--card-accent:#f59e0b;">
+    <span class="card-icon">🔬</span>
+    <span class="card-title">Roots Prototype</span>
+    <span class="card-desc">Core prototype version of the ACR Roots platform.</span>
+    <span class="card-tag">prototype</span>
+  </a>
+
+</div>
+
+
+<!-- ─── Durable Skills ────────────────────────────────────── -->
+<p class="section-label">Durable Skills in the Age of AI</p>
+<div class="grid">
+
+  <a class="card" href="DurableSkillsintheAgeofAI/JLX_NYC_Summit_Brief.html" style="--card-accent:#6c63ff;">
+    <span class="card-icon">📋</span>
+    <span class="card-title">JLX NYC Summit Brief</span>
+    <span class="card-desc">Summit brief for the JLX NYC Durable Skills event.</span>
+    <span class="card-tag">report</span>
+  </a>
+
+  <a class="card" href="DurableSkillsintheAgeofAI/jlx_venn_interactive_v3.html" style="--card-accent:#6c63ff;">
+    <span class="card-icon">⭕</span>
+    <span class="card-title">JLX Venn Interactive v3</span>
+    <span class="card-desc">Interactive Venn diagram for the Durable Skills framework.</span>
+    <span class="card-tag">interactive</span>
+  </a>
+
+</div>
+
+
+<!-- ─── Soulful Synergy ───────────────────────────────────── -->
+<p class="section-label">Soulful Synergy</p>
+<div class="grid">
+
+  <a class="card" href="Soulful Synergy/soulful_meeting_client_facing.html" style="--card-accent:#ec4899;">
+    <span class="card-icon">✨</span>
+    <span class="card-title">Soulful Meeting (Client-Facing)</span>
+    <span class="card-desc">Client-ready meeting facilitation tool for Soulful Synergy sessions.</span>
+    <span class="card-tag">client tool</span>
+  </a>
+
+</div>
+
+
+<!-- ─── Storytelling for Impact ──────────────────────────── -->
+<p class="section-label">Storytelling for Impact</p>
+<div class="grid">
+
+  <a class="card" href="Storytelling for Impact/stfi-interactive-workbook.html" style="--card-accent:#f97316;">
+    <span class="card-icon">📖</span>
+    <span class="card-title">STFI Interactive Workbook</span>
+    <span class="card-desc">Guided storytelling workbook for the STFI learning experience.</span>
+    <span class="card-tag">workbook</span>
+  </a>
+
+</div>
+
+
+<!-- ─── WISE ─────────────────────────────────────────────── -->
+<p class="section-label">WISE Scales</p>
+<div class="grid">
+
+  <a class="card" href="WISE/wise-scales-global-map/index.html" style="--card-accent:#00c9a7;">
+    <span class="card-icon">🌍</span>
+    <span class="card-title">WISE Global Map</span>
+    <span class="card-desc">Interactive global implementation map for the WISE Scales water course.</span>
+    <span class="card-tag">map</span>
+  </a>
+
+  <a class="card" href="WISE/wise-scales-global-map/WISE_Implementation_Map.html" style="--card-accent:#00c9a7;">
+    <span class="card-icon">🗺️</span>
+    <span class="card-title">WISE Implementation Map</span>
+    <span class="card-desc">Detailed implementation map for WISE Scales global deployments.</span>
+    <span class="card-tag">map</span>
+  </a>
+
+  <a class="card" href="WISE/wise-scales-global-map/wise-scales-decision-tree.html" style="--card-accent:#00c9a7;">
+    <span class="card-icon">🌿</span>
+    <span class="card-title">WISE Decision Tree</span>
+    <span class="card-desc">Branching decision tool for WISE Scales course pathways.</span>
+    <span class="card-tag">tool</span>
+  </a>
+
+  <a class="card" href="WISE/wise-scales-global-map/wise_scoring_reference.html" style="--card-accent:#00c9a7;">
+    <span class="card-icon">📊</span>
+    <span class="card-title">WISE Scoring Reference</span>
+    <span class="card-desc">Reference guide for WISE Scales scoring and assessment.</span>
+    <span class="card-tag">reference</span>
+  </a>
+
+</div>
+
+
+<!-- ─── Work Out Loud ─────────────────────────────────────── -->
+<p class="section-label">Work Out Loud</p>
+<div class="grid">
+
+  <a class="card" href="Work Out Loud/JLX Conference/jlx_outreach_tracker.html" style="--card-accent:#3b82f6;">
+    <span class="card-icon">📡</span>
+    <span class="card-title">JLX Outreach Tracker</span>
+    <span class="card-desc">Track outreach contacts and status for the JLX Conference.</span>
+    <span class="card-tag">tracker</span>
+  </a>
+
+  <a class="card" href="Work Out Loud/JLX Conference/jlx_venn_interactive_v3.html" style="--card-accent:#3b82f6;">
+    <span class="card-icon">⭕</span>
+    <span class="card-title">JLX Conference Venn Interactive</span>
+    <span class="card-desc">Interactive Venn diagram for the JLX Conference context.</span>
+    <span class="card-tag">interactive</span>
+  </a>
+
+  <a class="card" href="Work Out Loud/MEIKE/index.html" style="--card-accent:#3b82f6;">
+    <span class="card-icon">💡</span>
+    <span class="card-title">MEIKE</span>
+    <span class="card-desc">MEIKE project hub and learning experience.</span>
+    <span class="card-tag">project</span>
+  </a>
+
+  <a class="card" href="Work Out Loud/SixTheta Module/the-sensitivity-trap.html" style="--card-accent:#3b82f6;">
+    <span class="card-icon">🎯</span>
+    <span class="card-title">The Sensitivity Trap</span>
+    <span class="card-desc">SixTheta learning module on navigating sensitive workplace dynamics.</span>
+    <span class="card-tag">module</span>
+  </a>
+
+  <a class="card" href="Work Out Loud/TCK Pearson ADAM/TCK-ADAM/SHSAT_Irregularity_Guide_Prototype.html" style="--card-accent:#3b82f6;">
+    <span class="card-icon">📝</span>
+    <span class="card-title">SHSAT Irregularity Guide</span>
+    <span class="card-desc">Prototype guide for SHSAT irregularity procedures (TCK / Pearson ADAM).</span>
+    <span class="card-tag">prototype</span>
+  </a>
+
+</div>
+
+
+<hr class="divider" />
+<footer>WOL On The Go — ask Claude to refresh this page whenever you add new projects.</footer>
+
+</body>
+</html>
