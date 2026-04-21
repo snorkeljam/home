@@ -1,0 +1,71 @@
+{
+  "github_user": "snorkeljam",
+  "sections": {
+    "ACR Roots": {
+      "color": "#f59e0b",
+      "repos": {
+        "ACR-Roots": {
+          "pages": [
+            { "path": "index.html",                      "name": "ACR Roots",                     "icon": "🌳", "desc": "Main hub for the ACR community roots project.", "tag": "hub" },
+            { "path": "roots-prototype-standalone.html", "name": "Roots Prototype (Standalone)",  "icon": "🧪", "desc": "Self-contained prototype for the ACR Roots experience.", "tag": "prototype" },
+            { "path": "roots-prototype.html",            "name": "Roots Prototype",               "icon": "🔬", "desc": "Core prototype version of the ACR Roots platform.", "tag": "prototype" }
+          ]
+        }
+      }
+    },
+    "Durable Skills in the Age of AI": {
+      "color": "#6c63ff",
+      "repos": {
+        "jlx-conference-framework": {
+          "pages": [
+            { "path": "JLX_NYC_Summit_Brief.html",    "name": "JLX NYC Summit Brief",      "icon": "📋", "desc": "Summit brief for the JLX NYC Durable Skills event.", "tag": "report" },
+            { "path": "jlx_venn_interactive_v3.html", "name": "JLX Venn Interactive",      "icon": "⭕", "desc": "Interactive Venn diagram for the Durable Skills framework.", "tag": "interactive" }
+          ]
+        }
+      }
+    },
+    "Storytelling for Impact": {
+      "color": "#f97316",
+      "external": [
+        { "url": "https://storytelling-for-impact.vercel.app", "name": "STFI App", "icon": "📖", "desc": "Full Storytelling for Impact learning experience app.", "tag": "app" }
+      ]
+    },
+    "WISE Scales": {
+      "color": "#00c9a7",
+      "repos": {
+        "wise-scales-global-map": {
+          "pages": [
+            { "path": "index.html",                   "name": "WISE Global Map",           "icon": "🌍", "desc": "Interactive global implementation map for WISE Scales.", "tag": "map" },
+            { "path": "WISE_Implementation_Map.html", "name": "WISE Implementation Map",   "icon": "🗺️", "desc": "Detailed implementation map for WISE Scales deployments.", "tag": "map" },
+            { "path": "wise-scales-decision-tree.html","name": "WISE Decision Tree",        "icon": "🌿", "desc": "Branching decision tool for WISE Scales pathways.", "tag": "tool" },
+            { "path": "wise_scoring_reference.html",  "name": "WISE Scoring Reference",    "icon": "📊", "desc": "Reference guide for WISE Scales scoring and assessment.", "tag": "reference" }
+          ]
+        }
+      }
+    },
+    "Work Out Loud": {
+      "color": "#3b82f6",
+      "repos": {
+        "nyc-job-compass": {
+          "pages": [
+            { "path": "index.html", "name": "NYC Job Compass", "icon": "🧭", "desc": "Job navigation and career compass tool for NYC.", "tag": "tool" }
+          ]
+        },
+        "TCK-ADAM": {
+          "pages": [
+            { "path": "SHSAT_Irregularity_Guide_Prototype.html", "name": "SHSAT Irregularity Guide", "icon": "📝", "desc": "Prototype guide for SHSAT irregularity procedures.", "tag": "prototype" }
+          ]
+        },
+        "SixTheta-Module": {
+          "pages": [
+            { "path": "the-sensitivity-trap.html", "name": "The Sensitivity Trap", "icon": "🎯", "desc": "SixTheta module on navigating sensitive workplace dynamics.", "tag": "module" },
+            { "path": "image-previews.html",        "name": "Image Previews",       "icon": "🖼️", "desc": "SixTheta module image preview page.", "tag": "module" }
+          ]
+        }
+      },
+      "external": [
+        { "url": "https://arc-pizza-club.vercel.app", "name": "ARC Pizza Club", "icon": "🍕", "desc": "ARC Pizza Club community site.", "tag": "site" }
+      ]
+    }
+  }
+}
