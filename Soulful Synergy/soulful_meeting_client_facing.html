@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Soulful Synergies Meeting Guide — JLX</title>
+<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --jlx-orange: #FF6E00;
+    --jlx-purple: #831A78;
+    --jlx-mint: #46F3BB;
+    --jlx-navy: #1C3678;
+    --jlx-charcoal: #293133;
+    --jlx-light-gray: #E9EDEE;
+    --jlx-text: #1A1A1A;
+    --jlx-white: #FFFFFF;
+    --jlx-gradient: linear-gradient(135deg, #831A78 0%, #FF6E00 100%);
+    --font-main: 'Open Sans', Arial, sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: var(--font-main);
+    background: var(--jlx-light-gray);
+    color: var(--jlx-text);
+    min-height: 100vh;
+  }
+
+  .header {
+    background: var(--jlx-charcoal);
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .wordmark { font-size: 1.2rem; font-weight: 800; color: #fff; letter-spacing: -0.01em; }
+  .wordmark span { color: var(--jlx-orange); }
+  .save-status { font-size: 11px; color: rgba(255,255,255,0.5); font-weight: 400; }
+  .save-status.saved { color: var(--jlx-mint); }
+
+  .tabs {
+    display: flex;
+    background: #1e2527;
+    padding: 0 24px;
+    gap: 2px;
+    border-bottom: 2px solid var(--jlx-orange);
+    overflow-x: auto;
+  }
+  .tab {
+    padding: 10px 16px;
+    font-size: 11px;
+    font-weight: 700;
+    color: rgba(255,255,255,0.4);
+    cursor: pointer;
+    border: none;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -2px;
+    white-space: nowrap;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    transition: color 0.15s;
+    background: none;
+    font-family: var(--font-main);
+  }
+  .tab:hover { color: rgba(255,255,255,0.75); }
+  .tab.active { color: var(--jlx-orange); border-bottom-color: var(--jlx-orange); }
+
+  .content { padding: 24px; background: var(--jlx-light-gray); max-width: 860px; margin: 0 auto; }
+  .panel { display: none; }
+  .panel.active { display: block; animation: fadeIn 0.2s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+
+  .phase-label {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    padding: 3px 10px;
+    border-radius: 20px;
+    display: inline-block;
+    margin-bottom: 8px;
+    background: var(--jlx-orange);
+    color: white;
+  }
+  .phase-label.purple { background: var(--jlx-purple); }
+  .phase-label.navy { background: var(--jlx-navy); }
+  .phase-label.teal { background: #0F6E56; }
+  .phase-label.gray { background: #555; }
+
+  .step-card {
+    background: #fff;
+    border-radius: 10px;
+    border: 1px solid rgba(0,0,0,0.08);
+    padding: 18px 20px;
+    margin-bottom: 12px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+  }
+  .step-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--jlx-charcoal);
+    margin-bottom: 6px;
+  }
+  .step-body {
+    font-size: 13px;
+    color: #555;
+    line-height: 1.6;
+    margin-bottom: 12px;
+  }
+  .note-area {
+    width: 100%;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    padding: 10px 12px;
+    font-size: 13px;
+    font-family: var(--font-main);
+    color: var(--jlx-text);
+    background: #fafafa;
+    resize: vertical;
+    min-height: 64px;
+    line-height: 1.5;
+    transition: border-color 0.15s;
+  }
+  .note-area:focus { outline: none; border-color: var(--jlx-orange); background: #fff; }
+  .note-label {
+    font-size: 10px;
+    color: #999;
+    margin-bottom: 4px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  .q-group-header {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: white;
+    background: var(--jlx-charcoal);
+    padding: 5px 12px;
+    border-radius: 6px;
+    display: inline-block;
+    margin-bottom: 12px;
+    margin-top: 8px;
+  }
+  .q-group-header.orange { background: var(--jlx-orange); }
+  .q-group-header.purple { background: var(--jlx-purple); }
+  .q-group-header.navy { background: var(--jlx-navy); }
+
+  .q-card {
+    background: #fff;
+    border-radius: 10px;
+    border: 1px solid rgba(0,0,0,0.08);
+    padding: 16px 18px;
+    margin-bottom: 10px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+  }
+  .q-row { display: flex; gap: 12px; align-items: flex-start; margin-bottom: 10px; }
+  .q-num {
+    min-width: 22px; height: 22px;
+    border-radius: 50%;
+    background: var(--jlx-orange);
+    color: white;
+    font-size: 11px;
+    font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; margin-top: 1px;
+  }
+  .q-num.purple { background: var(--jlx-purple); }
+  .q-num.navy { background: var(--jlx-navy); }
+  .q-text { font-size: 13px; color: var(--jlx-charcoal); line-height: 1.6; font-weight: 600; }
+
+  .vision-hero {
+    border-radius: 10px;
+    padding: 28px 24px;
+    margin-bottom: 16px;
+    color: white;
+    background: var(--jlx-gradient);
+    position: relative;
+    overflow: hidden;
+  }
+  .vision-hero::before {
+    content: '';
+    position: absolute;
+    top: -30px; right: -30px;
+    width: 160px; height: 160px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.06);
+  }
+  .vision-eyebrow { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; opacity: 0.75; margin-bottom: 8px; position: relative; z-index: 1; }
+  .vision-headline { font-size: 1.6rem; font-weight: 800; line-height: 1.2; margin-bottom: 10px; position: relative; z-index: 1; }
+  .vision-sub { font-size: 13px; opacity: 0.9; line-height: 1.65; position: relative; z-index: 1; }
+
+  .pillars { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 16px; }
+  .pillar {
+    background: #fff;
+    border-radius: 10px;
+    border: 1px solid rgba(0,0,0,0.08);
+    padding: 16px;
+    text-align: center;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+  }
+  .pillar-icon {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    margin: 0 auto 10px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .pillar-icon.orange { background: rgba(255,110,0,0.1); }
+  .pillar-icon.purple { background: rgba(131,26,120,0.1); }
+  .pillar-icon.teal { background: rgba(15,110,86,0.1); }
+  .pillar-name { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; color: var(--jlx-charcoal); margin-bottom: 4px; }
+  .pillar-desc { font-size: 12px; color: #666; line-height: 1.5; }
+
+  .phases-strip { display: flex; border-radius: 8px; overflow: hidden; margin-bottom: 12px; }
+  .ph { flex: 1; padding: 12px 8px; text-align: center; color: white; }
+  .ph:nth-child(1) { background: #831A78; }
+  .ph:nth-child(2) { background: #9e267a; }
+  .ph:nth-child(3) { background: #bf3e60; }
+  .ph:nth-child(4) { background: #d95225; }
+  .ph:nth-child(5) { background: #FF6E00; }
+  .ph-num { font-size: 9px; font-weight: 700; opacity: 0.75; text-transform: uppercase; display: block; margin-bottom: 3px; }
+  .ph-name { font-size: 11px; font-weight: 800; display: block; }
+
+  .compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+  .compare-card {
+    background: #fff;
+    border-radius: 10px;
+    border: 1px solid rgba(0,0,0,0.08);
+    padding: 16px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+  }
+  .compare-label { font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px; color: #999; }
+  .compare-label.orange { color: var(--jlx-orange); }
+  .compare-item { font-size: 12px; color: #666; line-height: 1.8; padding-left: 12px; position: relative; }
+  .compare-item::before { content: '·'; position: absolute; left: 0; color: #ccc; }
+  .compare-item.positive { color: #444; }
+  .compare-item.positive::before { content: '·'; color: var(--jlx-orange); }
+
+  .close-dark {
+    background: var(--jlx-charcoal);
+    border-radius: 10px;
+    padding: 24px;
+    color: white;
+    margin-bottom: 14px;
+  }
+  .close-dark h3 { font-size: 13px; font-weight: 800; color: var(--jlx-orange); margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.06em; }
+  .close-dark p { font-size: 13px; line-height: 1.65; opacity: 0.88; margin-bottom: 8px; }
+  .script-line {
+    border-left: 3px solid var(--jlx-orange);
+    padding: 12px 16px;
+    margin: 10px 0;
+    font-size: 13px;
+    font-style: italic;
+    line-height: 1.65;
+    color: rgba(255,255,255,0.92);
+    background: rgba(255,110,0,0.09);
+    border-radius: 0 6px 6px 0;
+  }
+
+  .obj-card {
+    background: #fff;
+    border-radius: 10px;
+    border: 1px solid rgba(0,0,0,0.08);
+    padding: 16px 18px;
+    margin-bottom: 10px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+  }
+  .obj-q { font-size: 13px; font-weight: 700; color: var(--jlx-charcoal); margin-bottom: 6px; }
+  .obj-a { font-size: 13px; color: #555; line-height: 1.6; }
+
+  .export-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 9px 18px;
+    background: var(--jlx-orange);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: 16px;
+    font-family: var(--font-main);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  .export-btn:hover { background: #cc5800; }
+
+  .export-out {
+    display: none;
+    margin-top: 16px;
+    background: #fff;
+    border: 1px solid rgba(0,0,0,0.1);
+    border-radius: 10px;
+    padding: 16px;
+  }
+  .export-out-label { font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; color: #999; margin-bottom: 10px; }
+  pre#exportText { font-size: 12px; line-height: 1.7; white-space: pre-wrap; font-family: var(--font-main); color: var(--jlx-text); }
+
+  @media (max-width: 600px) {
+    .pillars { grid-template-columns: 1fr; }
+    .compare-grid { grid-template-columns: 1fr; }
+    .phases-strip { flex-wrap: wrap; }
+    .ph { min-width: 33%; }
+    .content { padding: 16px; }
+    .tabs { padding: 0 12px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="wordmark">Jackrabbit<span>LX</span></div>
+</div>
+
+<div class="tabs">
+  <button class="tab active" onclick="showTab('runofshow',this)">Agenda</button>
+  <button class="tab" onclick="showTab('questions',this)">Questions</button>
+  <button class="tab" onclick="showTab('vision',this)">Vision</button>
+
+</div>
+
+<div class="content">
+
+  <!-- AGENDA -->
+  <div id="runofshow" class="panel active">
+
+    <div style="background: var(--jlx-gradient); border-radius: 10px; padding: 24px 28px; margin-bottom: 20px; color: white;">
+      <div style="font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; opacity: 0.75; margin-bottom: 6px;">Soulful Synergies × JLX + LIFE3</div>
+      <div style="font-size: 1.4rem; font-weight: 800; line-height: 1.2;">LMS Vision & Partnership</div>
+      <div style="font-size: 13px; opacity: 0.85; margin-top: 6px;">1-hour working session</div>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 10px;">
+
+      <div style="background: #fff; border-radius: 10px; border: 1px solid rgba(0,0,0,0.08); padding: 20px 24px; display: flex; align-items: flex-start; gap: 18px; box-shadow: 0 1px 4px rgba(0,0,0,0.04);">
+        <div style="min-width: 32px; height: 32px; border-radius: 50%; background: var(--jlx-orange); color: white; font-size: 13px; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px;">1</div>
+        <div>
+          <div style="font-size: 15px; font-weight: 700; color: var(--jlx-charcoal); margin-bottom: 4px;">Updates & Context</div>
+          <div style="font-size: 13px; color: #666; line-height: 1.6;">Where we are, what's been built, and what this conversation is for.</div>
+        </div>
+      </div>
+
+      <div style="background: #fff; border-radius: 10px; border: 1px solid rgba(0,0,0,0.08); padding: 20px 24px; display: flex; align-items: flex-start; gap: 18px; box-shadow: 0 1px 4px rgba(0,0,0,0.04);">
+        <div style="min-width: 32px; height: 32px; border-radius: 50%; background: var(--jlx-navy); color: white; font-size: 13px; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px;">2</div>
+        <div>
+          <div style="font-size: 15px; font-weight: 700; color: var(--jlx-charcoal); margin-bottom: 4px;">Your Learners, Now and in the Future</div>
+          <div style="font-size: 13px; color: #666; line-height: 1.6;">We want to understand who you're serving, how they currently engage, and what's working — and what isn't.</div>
+        </div>
+      </div>
+
+      <div style="background: #fff; border-radius: 10px; border: 1px solid rgba(0,0,0,0.08); padding: 20px 24px; display: flex; align-items: flex-start; gap: 18px; box-shadow: 0 1px 4px rgba(0,0,0,0.04);">
+        <div style="min-width: 32px; height: 32px; border-radius: 50%; background: var(--jlx-purple); color: white; font-size: 13px; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px;">3</div>
+        <div>
+          <div style="font-size: 15px; font-weight: 700; color: var(--jlx-charcoal); margin-bottom: 4px;">Priorities & Vision for Phase 1</div>
+          <div style="font-size: 13px; color: #666; line-height: 1.6;">What would make the biggest difference for learners right now — and what does success look like at the end of Phase 1?</div>
+        </div>
+      </div>
+
+      <div style="background: #fff; border-radius: 10px; border: 1px solid rgba(0,0,0,0.08); padding: 20px 24px; display: flex; align-items: flex-start; gap: 18px; box-shadow: 0 1px 4px rgba(0,0,0,0.04);">
+        <div style="min-width: 32px; height: 32px; border-radius: 50%; background: #0F6E56; color: white; font-size: 13px; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px;">4</div>
+        <div>
+          <div style="font-size: 15px; font-weight: 700; color: var(--jlx-charcoal); margin-bottom: 4px;">The JLX + LIFE3 Approach</div>
+          <div style="font-size: 13px; color: #666; line-height: 1.6;">We'll share our thinking on what this could look like — built around what we've just heard from you.</div>
+        </div>
+      </div>
+
+      <div style="background: #fff; border-radius: 10px; border: 1px solid rgba(0,0,0,0.08); padding: 20px 24px; display: flex; align-items: flex-start; gap: 18px; box-shadow: 0 1px 4px rgba(0,0,0,0.04);">
+        <div style="min-width: 32px; height: 32px; border-radius: 50%; background: #555; color: white; font-size: 13px; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px;">5</div>
+        <div>
+          <div style="font-size: 15px; font-weight: 700; color: var(--jlx-charcoal); margin-bottom: 4px;">Next Steps</div>
+          <div style="font-size: 13px; color: #666; line-height: 1.6;">How we move forward together.</div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- QUESTIONS -->
+  <div id="questions" class="panel">
+
+    <div class="q-group-header">Tier 1 — Learner reality</div>
+
+    <div class="q-card">
+      <div class="q-row"><div class="q-num">1</div><div class="q-text">Who exactly are your learners right now — and who do you want them to be in two years?</div></div>
+      <div class="note-label">Their answer</div>
+      <textarea class="note-area" data-key="q1" placeholder="What they said..."></textarea>
+    </div>
+
+    <div class="q-card">
+      <div class="q-row"><div class="q-num">2</div><div class="q-text">What does a learner's typical week look like — how do they engage with the program outside of live sessions?</div></div>
+      <div class="note-label">Their answer</div>
+      <textarea class="note-area" data-key="q2" placeholder="What they said..."></textarea>
+    </div>
+
+    <div class="q-card">
+      <div class="q-row"><div class="q-num">3</div><div class="q-text">Where do learners actually go to ask questions, share wins, or connect with each other today?</div></div>
+      <div class="note-label">Their answer</div>
+      <textarea class="note-area" data-key="q3" placeholder="What they said..."></textarea>
+    </div>
+
+    <div class="q-group-header orange">Tier 2 — Platform priorities</div>
+
+    <div class="q-card">
+      <div class="q-row"><div class="q-num" style="background:var(--jlx-orange)">5</div><div class="q-text">When you imagine the platform six months from now — what does it look like and feel like for someone logging in for the first time?</div></div>
+      <div class="note-label">Their answer</div>
+      <textarea class="note-area" data-key="q5" placeholder="What they said..."></textarea>
+    </div>
+
+    <div class="q-card">
+      <div class="q-row"><div class="q-num" style="background:var(--jlx-orange)">6</div><div class="q-text">Of everything this platform could eventually do — what's the one thing that would have the biggest impact on learners right now?</div></div>
+      <div class="note-label">Their answer</div>
+      <textarea class="note-area" data-key="q6" placeholder="What they said..."></textarea>
+    </div>
+
+    <div class="q-card">
+      <div class="q-row"><div class="q-num" style="background:var(--jlx-orange)">7</div><div class="q-text">What does success look like at the end of Phase 1 — how would you know it worked?</div></div>
+      <div class="note-label">Their answer</div>
+      <textarea class="note-area" data-key="q8" placeholder="What they said..."></textarea>
+    </div>
+
+    <div class="q-group-header purple">Tier 3 — Scope & resources</div>
+
+    <div class="q-card">
+      <div class="q-row"><div class="q-num purple">9</div><div class="q-text">Who internally would be most involved in this build — and realistically, how much bandwidth do they have?</div></div>
+      <div class="note-label">Their answer</div>
+      <textarea class="note-area" data-key="q9" placeholder="What they said..."></textarea>
+    </div>
+
+    <div class="q-card">
+      <div class="q-row"><div class="q-num purple">10</div><div class="q-text">Are there timelines we're working around — grant reporting dates, cohort launches, anything like that?</div></div>
+      <div class="note-label">Their answer</div>
+      <textarea class="note-area" data-key="q10" placeholder="What they said..."></textarea>
+    </div>
+
+    <div class="q-card">
+      <div class="q-row"><div class="q-num purple">11</div><div class="q-text">Is funding for this work already allocated — or is part of the work figuring out how to fund it?</div></div>
+      <div class="note-label">Their answer</div>
+      <textarea class="note-area" data-key="q11" placeholder="What they said..."></textarea>
+    </div>
+
+    <div class="q-card">
+      <div class="q-row"><div class="q-num navy">12</div><div class="q-text">If you had to put a rough number on what you'd want to invest in getting this right in Phase 1 — what feels right?</div></div>
+      <div class="note-label">Their answer</div>
+      <textarea class="note-area" data-key="q12" placeholder="What they said..."></textarea>
+    </div>
+
+  </div>
+
+  <!-- VISION -->
+  <div id="vision" class="panel">
+
+    <div class="vision-hero">
+      <div class="vision-eyebrow">Soulful Synergies × JLX + LIFE3</div>
+      <div class="vision-headline">From learning repository<br>to living community</div>
+      <div class="vision-sub">Your platform is already live. The next step isn't more content — it's building the infrastructure that makes learners want to come back, connect, and grow together.</div>
+    </div>
+
+    <div class="pillars">
+      <div class="pillar">
+        <div class="pillar-icon orange">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="6.5" r="3" stroke="#FF6E00" stroke-width="1.5"/><path d="M2.5 15c0-3.59 2.91-6.5 6.5-6.5s6.5 2.91 6.5 6.5" stroke="#FF6E00" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </div>
+        <div class="pillar-name">Understand</div>
+        <div class="pillar-desc">Co-design with your learners so the platform reflects how they actually think and move</div>
+      </div>
+      <div class="pillar">
+        <div class="pillar-icon purple">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 2L11.5 7H16.5L12.5 10.5L14 15.5L9 12.5L4 15.5L5.5 10.5L1.5 7H6.5L9 2Z" stroke="#831A78" stroke-width="1.5" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="pillar-name">Activate</div>
+        <div class="pillar-desc">Build community features that get used — because people are genuinely brought in</div>
+      </div>
+      <div class="pillar">
+        <div class="pillar-icon teal">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M3 15V8M9 15V3M15 15V10" stroke="#0F6E56" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </div>
+        <div class="pillar-name">Sustain</div>
+        <div class="pillar-desc">Roles, reporting, and a funding model to keep the platform alive long-term</div>
+      </div>
+    </div>
+
+    <div style="background:#fff; border-radius:10px; border:1px solid rgba(0,0,0,0.08); padding:20px; margin-bottom:16px; box-shadow:0 1px 4px rgba(0,0,0,0.04);">
+      <div style="font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:0.1em; color:var(--jlx-orange); margin-bottom:12px;">The journey — 5 phases</div>
+      <div class="phases-strip">
+        <div class="ph"><span class="ph-num">Phase 1</span><span class="ph-name">Discover</span></div>
+        <div class="ph"><span class="ph-num">Phase 2</span><span class="ph-name">Design</span></div>
+        <div class="ph"><span class="ph-num">Phase 3</span><span class="ph-name">Build</span></div>
+        <div class="ph"><span class="ph-num">Phase 4</span><span class="ph-name">Activate</span></div>
+        <div class="ph"><span class="ph-num">Phase 5</span><span class="ph-name">Sustain</span></div>
+      </div>
+      <p style="font-size:12px; color:#666; line-height:1.6; margin-top:12px;">We don't start building until we understand. Phase 1 is a focused discovery sprint — where we get aligned before any development happens.</p>
+    </div>
+
+    <div class="compare-grid">
+      <div class="compare-card">
+        <div class="compare-label">Today</div>
+        <div class="compare-item">Learners log in to access files</div>
+        <div class="compare-item">Questions go to WhatsApp</div>
+        <div class="compare-item">No connection across cohorts</div>
+        <div class="compare-item">Platform feels like a folder</div>
+      </div>
+      <div class="compare-card" style="border-color:rgba(255,110,0,0.3);">
+        <div class="compare-label orange">With this work</div>
+        <div class="compare-item positive">Learners log in to connect and learn</div>
+        <div class="compare-item positive">Questions answered by peers</div>
+        <div class="compare-item positive">Alumni mentoring current cohort</div>
+        <div class="compare-item positive">Platform feels like a community</div>
+      </div>
+    </div>
+
+    <div class="step-card">
+      <div class="note-label">Their reaction to the vision</div>
+      <textarea class="note-area" data-key="vision_reaction" placeholder="What resonated? What questions did they ask?"></textarea>
+    </div>
+
+  </div>
+
+
+
+</div>
+
+<script>
+const STORAGE_KEY_PREFIX = 'jlx_soulful_';
+const LABELS = {
+  ros_open: 'Open (0:00–0:05)',
+  ros_discovery: 'Discovery (0:05–0:25)',
+  ros_pivot: 'Pivot — their reaction to vision',
+  ros_ask: 'The ask — their response',
+  ros_close: 'Agreed next steps',
+  q1: 'Q1: Who are your learners?',
+  q2: 'Q2: Learner weekly engagement',
+  q3: 'Q3: Where do learners connect today?',
+  q4: 'Q4: Biggest disengagement frustration',
+  q5: 'Q5: Platform vision in 6 months',
+  q6: 'Q6: Biggest single impact',
+  q7: 'Q7: What is working today',
+  q8: 'Q8: What does Phase 1 success look like',
+  q9: 'Q9: Internal team bandwidth',
+  q10: 'Q10: Key timelines',
+  q11: 'Q11: Funding status',
+  q12: 'Q12: Budget range',
+  vision_reaction: 'Vision — their reaction',
+  close_offer: 'Workshop offer — their response',
+  close_objections: 'Objections raised',
+  meta_impressions: 'Overall impressions',
+  meta_quotes: 'Key verbatim quotes',
+  meta_priority: 'Their #1 priority',
+  meta_budget: 'Budget signals',
+  meta_nextsteps: 'Agreed next steps',
+};
+
+function loadAll() {
+  document.querySelectorAll('.note-area').forEach(el => {
+    const saved = localStorage.getItem(STORAGE_KEY_PREFIX + el.dataset.key);
+    if (saved) el.value = saved;
+  });
+}
+
+function saveKey(key, value) {
+  try {
+    localStorage.setItem(STORAGE_KEY_PREFIX + key, value);
+    const s = document.getElementById('saveStatus');
+    s.textContent = 'saved';
+    s.className = 'save-status saved';
+    clearTimeout(window._saveResetTimer);
+    window._saveResetTimer = setTimeout(() => {
+      s.textContent = 'notes auto-save';
+      s.className = 'save-status';
+    }, 2000);
+  } catch(e) {
+    document.getElementById('saveStatus').textContent = 'save failed';
+  }
+}
+
+let saveTimer = null;
+document.querySelectorAll('.note-area').forEach(el => {
+  el.addEventListener('input', () => {
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(() => saveKey(el.dataset.key, el.value), 800);
+  });
+});
+
+function showTab(id, btn) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  btn.classList.add('active');
+}
+
+function exportNotes() {
+  let out = 'SOULFUL SYNERGIES MEETING NOTES\n';
+  out += new Date().toLocaleDateString('en-US', { weekday:'long', year:'numeric', month:'long', day:'numeric' }) + '\n';
+  out += '='.repeat(42) + '\n\n';
+  document.querySelectorAll('.note-area').forEach(el => {
+    if (el.value.trim()) {
+      const label = LABELS[el.dataset.key] || el.dataset.key;
+      out += label + '\n' + '-'.repeat(32) + '\n' + el.value.trim() + '\n\n';
+    }
+  });
+  const pre = document.getElementById('exportText');
+  pre.textContent = out;
+  document.getElementById('exportOut').style.display = 'block';
+  pre.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+loadAll();
+</script>
+</body>
+</html>

@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nobody asked about their employers — JLX Wave 1 Preview</title>
+<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --jlx-orange: #FF6E00;
+    --jlx-purple: #831A78;
+    --jlx-mint: #46F3BB;
+    --jlx-navy: #1C3678;
+    --jlx-light-gray: #E9EDEE;
+    --jlx-charcoal: #293133;
+    --jlx-text: #1A1A1A;
+    --jlx-muted: #5F6668;
+    --jlx-white: #FFFFFF;
+    --font-main: 'Open Sans', Arial, sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: var(--font-main);
+    background: var(--jlx-light-gray);
+    color: var(--jlx-text);
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  .container {
+    max-width: 820px;
+    margin: 0 auto;
+    padding: 40px 24px 60px;
+  }
+
+  /* Header */
+  .hdr {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 32px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid var(--jlx-orange);
+  }
+  .logo {
+    font-weight: 800;
+    font-size: 18px;
+    color: var(--jlx-charcoal);
+    letter-spacing: -0.01em;
+  }
+  .logo .lx { color: var(--jlx-orange); }
+  .kicker {
+    margin-left: auto;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--jlx-muted);
+    font-weight: 700;
+  }
+
+  /* Hero */
+  .hero h1 {
+    font-size: 36px;
+    font-weight: 800;
+    line-height: 1.1;
+    color: var(--jlx-charcoal);
+    margin-bottom: 16px;
+    letter-spacing: -0.02em;
+  }
+  .hero h1 .accent { color: var(--jlx-orange); }
+  .hero-sub {
+    font-size: 17px;
+    color: var(--jlx-muted);
+    line-height: 1.6;
+    max-width: 620px;
+    margin-bottom: 28px;
+  }
+
+  /* Stat card */
+  .stat {
+    background: var(--jlx-white);
+    border-left: 6px solid var(--jlx-orange);
+    padding: 24px 28px;
+    border-radius: 4px;
+    margin-bottom: 36px;
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+  .stat-num {
+    font-size: 64px;
+    font-weight: 800;
+    color: var(--jlx-charcoal);
+    line-height: 1;
+    letter-spacing: -0.03em;
+  }
+  .stat-num .pct { color: var(--jlx-orange); }
+  .stat-desc {
+    font-size: 15px;
+    color: var(--jlx-text);
+    line-height: 1.55;
+  }
+  .stat-desc strong { font-weight: 700; color: var(--jlx-charcoal); }
+
+  /* Axis toggle */
+  .toggle-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 18px;
+    flex-wrap: wrap;
+  }
+  .toggle-label {
+    font-size: 13px;
+    color: var(--jlx-muted);
+    font-weight: 700;
+    letter-spacing: 0.02em;
+  }
+  .toggle {
+    display: inline-flex;
+    border: 1.5px solid var(--jlx-charcoal);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .toggle button {
+    background: var(--jlx-white);
+    border: 0;
+    padding: 8px 16px;
+    font-family: var(--font-main);
+    font-size: 13px;
+    color: var(--jlx-charcoal);
+    cursor: pointer;
+    font-weight: 700;
+    transition: background 0.15s;
+  }
+  .toggle button:not(:last-child) {
+    border-right: 1.5px solid var(--jlx-charcoal);
+  }
+  .toggle button.active {
+    background: var(--jlx-charcoal);
+    color: var(--jlx-white);
+  }
+  .toggle button:not(.active):hover {
+    background: #F4F6F7;
+  }
+
+  /* Grid */
+  .grid-wrap {
+    background: var(--jlx-white);
+    padding: 20px;
+    border-radius: 6px;
+    margin-bottom: 12px;
+    overflow-x: auto;
+  }
+  .grid {
+    display: grid;
+    gap: 4px;
+    min-width: 560px;
+  }
+  .corner, .col-label {
+    font-size: 12px;
+    color: var(--jlx-muted);
+    padding: 6px 4px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    text-align: center;
+    line-height: 1.25;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+  }
+  .row-label {
+    font-size: 13px;
+    color: var(--jlx-charcoal);
+    padding: 8px 12px 8px 4px;
+    display: flex;
+    align-items: center;
+    font-weight: 700;
+    line-height: 1.25;
+  }
+  .cell {
+    min-height: 44px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 800;
+    cursor: pointer;
+    transition: transform 0.12s, box-shadow 0.12s;
+    border: 0;
+    font-family: var(--font-main);
+  }
+  .cell:hover:not(.c0) {
+    transform: scale(1.04);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+  }
+  .cell.selected {
+    box-shadow: 0 0 0 3px var(--jlx-charcoal);
+  }
+  .cell.c0 { background: #F4F6F7; color: #B8BDBE; cursor: default; }
+  .cell.c1 { background: #FFE5D3; color: #8A3C00; }
+  .cell.c2 { background: #FFC49A; color: #6B2E00; }
+  .cell.c3 { background: #FF9B5C; color: #4D2100; }
+  .cell.c4 { background: #FF7A2E; color: var(--jlx-white); }
+  .cell.c5 { background: var(--jlx-orange); color: var(--jlx-white); }
+
+  /* Legend */
+  .legend {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 11px;
+    color: var(--jlx-muted);
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+  }
+  .sw {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border-radius: 3px;
+    vertical-align: middle;
+    margin-right: 4px;
+  }
+  .legend-item { display: inline-flex; align-items: center; }
+
+  /* Panel */
+  .panel {
+    background: var(--jlx-white);
+    padding: 24px 28px;
+    border-radius: 6px;
+    min-height: 160px;
+    margin-bottom: 32px;
+    border-top: 3px solid var(--jlx-orange);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+  .panel-empty {
+    color: var(--jlx-muted);
+    font-style: italic;
+    font-size: 14px;
+    line-height: 1.7;
+  }
+  .panel-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 16px;
+    margin-bottom: 14px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--jlx-light-gray);
+    flex-wrap: wrap;
+  }
+  .panel-title {
+    font-size: 16px;
+    font-weight: 800;
+    color: var(--jlx-charcoal);
+    line-height: 1.3;
+  }
+  .panel-count {
+    font-size: 12px;
+    color: var(--jlx-muted);
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  .quote-block {
+    padding: 14px 0;
+    border-bottom: 1px solid var(--jlx-light-gray);
+  }
+  .quote-block:last-child { border-bottom: 0; }
+  .quote-text {
+    font-size: 16px;
+    line-height: 1.55;
+    color: var(--jlx-charcoal);
+    margin-bottom: 6px;
+    font-weight: 400;
+  }
+  .quote-text::before { content: "\201C"; color: var(--jlx-orange); font-weight: 800; margin-right: 2px; }
+  .quote-text::after { content: "\201D"; color: var(--jlx-orange); font-weight: 800; margin-left: 2px; }
+  .quote-meta {
+    font-size: 11px;
+    color: var(--jlx-muted);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    font-weight: 700;
+  }
+
+  /* CTA */
+  .cta {
+    background: var(--jlx-charcoal);
+    color: var(--jlx-white);
+    padding: 28px 32px;
+    border-radius: 6px;
+    margin-bottom: 20px;
+  }
+  .cta h2 {
+    font-size: 20px;
+    font-weight: 800;
+    margin-bottom: 10px;
+    color: var(--jlx-white);
+  }
+  .cta p {
+    font-size: 15px;
+    line-height: 1.6;
+    color: #CFD3D4;
+    margin-bottom: 18px;
+  }
+  .cta-btn {
+    display: inline-block;
+    background: var(--jlx-orange);
+    color: var(--jlx-white);
+    text-decoration: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    font-weight: 700;
+    font-size: 14px;
+    transition: background 0.15s;
+  }
+  .cta-btn:hover { background: #E65F00; }
+
+  .foot {
+    font-size: 11px;
+    color: var(--jlx-muted);
+    letter-spacing: 0.04em;
+    line-height: 1.6;
+    text-align: center;
+  }
+
+  /* Mobile */
+  @media (max-width: 640px) {
+    .hero h1 { font-size: 28px; }
+    .stat { flex-direction: column; align-items: flex-start; gap: 12px; padding: 20px; }
+    .stat-num { font-size: 52px; }
+    .cta { padding: 22px; }
+    .panel { padding: 20px; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header class="hdr">
+    <div class="logo">Jackrabbit<span class="lx">LX</span></div>
+    <div class="kicker">Wave 1 Preview</div>
+  </header>
+
+  <section class="hero">
+    <h1>Nobody asked about their employers.<br><span class="accent">They brought it up anyway.</span></h1>
+    <p class="hero-sub">In December we ran a survey asking 133 learning professionals what skills matter now and what barriers limit their development. Nowhere in that survey did we ask about employers, leadership, or the state of the profession. In the open text, respondents brought it up anyway.</p>
+  </section>
+
+  <div class="stat">
+    <div class="stat-num"><span class="pct">41%</span></div>
+    <div class="stat-desc">
+      <strong>raised institutional critique, unprompted.</strong><br>
+      Critiques of employers, leadership, higher ed, the industry, and the profession itself showed up across every sector and every career level. Tap the cells below to read what they said.
+    </div>
+  </div>
+
+  <div class="toggle-row">
+    <span class="toggle-label">View by:</span>
+    <div class="toggle" role="tablist">
+      <button id="tab-sector" class="active" onclick="setAxis('sector')">Sector</button>
+      <button id="tab-level" onclick="setAxis('level')">Career level</button>
+    </div>
+  </div>
+
+  <div class="grid-wrap">
+    <div id="grid" class="grid" role="grid" aria-label="Heatmap of institutional critique themes"></div>
+  </div>
+
+  <div class="legend">
+    <span style="text-transform:none; letter-spacing:0.02em; font-weight:400;">Respondents per cell:</span>
+    <span class="legend-item"><span class="sw" style="background:#FFE5D3;"></span>1</span>
+    <span class="legend-item"><span class="sw" style="background:#FFC49A;"></span>2</span>
+    <span class="legend-item"><span class="sw" style="background:#FF9B5C;"></span>3</span>
+    <span class="legend-item"><span class="sw" style="background:#FF7A2E;"></span>4–6</span>
+    <span class="legend-item"><span class="sw" style="background:#FF6E00;"></span>7+</span>
+  </div>
+
+  <div id="panel" class="panel">
+    <div class="panel-empty">Tap any colored cell to read the quotes behind it. Color intensity shows how many respondents landed in that cell. It is not a measure of how harsh the critique is.</div>
+  </div>
+
+  <div class="cta">
+    <h2>This is one finding from the Wave 1 report.</h2>
+    <p>The full report lands in May with twelve more findings, including the storytelling skill gap and the upstream versus downstream divide. If you want it in your inbox the day it drops, let us know.</p>
+    <a href="https://jackrabbitlx.com/contact/" class="cta-btn" target="_blank" rel="noopener">Get the report →</a>
+  </div>
+
+  <p class="foot">Wave 1 n=133 · Survey open December 2025 through April 2026 · Jackrabbit Learning Experience</p>
+
+</div>
+
+<script>
+const IC_DATA = {"records":[{"id":3,"sector":"Corporate L&D","level":"Mid-level","region":"North America","themes":["PD market & associations"],"quote":"We should not need to pay for our tools to keep up with industry standards."},{"id":4,"sector":"Higher Ed","level":"Senior-level","region":"North America","themes":["PD market & associations"],"quote":"Professional relationships tend to work in a pay for service model, but those true partnerships require the service and the client to collaborate."},{"id":6,"sector":"Higher Ed","level":"Mid-level","region":"North America","themes":["Higher ed institutional critique"],"quote":"Higher education programs have a responsibility to move beyond simply introducing AI tools."},{"id":8,"sector":"Other","level":"Mid-level","region":"Europe","themes":["Employer & workplace conditions"],"quote":"Corporations seem to view this as a 'nice to have.'"},{"id":10,"sector":"Higher Ed","level":"Senior-level","region":"North America","themes":["Employer & workplace conditions","Higher ed institutional critique"],"quote":"Higher education is in a tight financial place. If I want to take some professional development, I have to pay for it myself."},{"id":14,"sector":"Corporate L&D","level":"Senior-level","region":"Europe","themes":["Employer & workplace conditions","Leadership not getting it","PD market & associations"],"quote":"All the L&D events are heavily paid, commercial events."},{"id":15,"sector":"Higher Ed","level":"Entry level","region":"North America","themes":["Industry / profession self-critique"],"quote":"L&D must move from a support function to a strategic partner in enabling change and capability building."},{"id":16,"sector":"Higher Ed","level":"Mid-level","region":"North America","themes":["Industry / profession self-critique"],"quote":"Learning professionals can no longer work in isolation but must partner with colleagues across departments."},{"id":18,"sector":"Higher Ed","level":"Senior-level","region":"Latin America","themes":["Employer & workplace conditions","How AI is being imposed"],"quote":"With AI, companies are demanding faster results from employees. Keeping that pace is getting very difficult."},{"id":20,"sector":"Higher Ed","level":"Mid-level","region":"North America","themes":["Higher ed institutional critique"],"quote":"The faculty I work with are actually tending to shift away from AI in opposition."},{"id":22,"sector":"Corporate L&D","level":"Mid-level","region":"North America","themes":["Employer & workplace conditions","Leadership not getting it","How AI is being imposed"],"quote":"I'm not sure the C-Suite may understand that. We are holding onto our jobs for dear life and making do with sub-par working conditions."},{"id":23,"sector":"Higher Ed","level":"Senior-level","region":"North America","themes":["Leadership not getting it","How AI is being imposed"],"quote":"As AI is foisted upon us, clearly articulating one's perspective will keep our seat at the table."},{"id":25,"sector":"Gov / K-12 / Nonprofit","level":"Senior-level","region":"Asia-Pacific","themes":["PD market & associations"],"quote":"Access to high-quality, context-relevant programs can be limited, especially those applicable beyond large corporate settings."},{"id":32,"sector":"Other","level":"Mid-level","region":"Europe","themes":["Leadership not getting it","How AI is being imposed"],"quote":"There's a real risk that organizations use AI to produce learning content faster and cheaper, without ever asking whether that content is actually working."},{"id":35,"sector":"Corporate L&D","level":"Entry level","region":"North America","themes":["How AI is being imposed"],"quote":"More buy-in to see ROI that's not monetized."},{"id":38,"sector":"Other","level":"Mid-level","region":"North America","themes":["Industry / profession self-critique"],"quote":"The industry of learning is currently more based on aesthetics instead of functionality."},{"id":41,"sector":"Corporate L&D","level":"Mid-level","region":"North America","themes":["Employer & workplace conditions","How AI is being imposed"],"quote":"Time to experiment with new things can lack when you're in a corporate environment that needs things done yesterday."},{"id":48,"sector":"Corporate L&D","level":"Mid-level","region":"North America","themes":["Employer & workplace conditions"],"quote":"We're in the middle of massive changes with work that limit my ability to continue developing myself."},{"id":49,"sector":"Gov / K-12 / Nonprofit","level":"Senior-level","region":"North America","themes":["Employer & workplace conditions"],"quote":"My organization caps professional development funding at a level that rarely covers registration, travel, and lodging."},{"id":50,"sector":"Higher Ed","level":"Mid-level","region":"North America","themes":["Employer & workplace conditions"],"quote":"I am still under-resourced at work."},{"id":52,"sector":"Higher Ed","level":"Senior-level","region":"North America","themes":["PD market & associations"],"quote":"Currently, there are very few true mentoring options that aren't cost-prohibitive."},{"id":54,"sector":"Other","level":"Senior-level","region":"North America","themes":["Industry / profession self-critique"],"quote":"I'm concerned that the nuanced way of working with people will be considered unimportant."},{"id":59,"sector":"Corporate L&D","level":"Senior-level","region":"North America","themes":["Industry / profession self-critique","PD market & associations"],"quote":"I'd love to see some standards or more guidance from the big associations and orgs. It feels like the wild west out here now!"},{"id":65,"sector":"Gov / K-12 / Nonprofit","level":"Senior-level","region":"Africa","themes":["Employer & workplace conditions"],"quote":"Lack of adequate capacity at work leaves me with minimal spare energy to invest in myself."},{"id":66,"sector":"Corporate L&D","level":"Mid-level","region":"North America","themes":["Employer & workplace conditions"],"quote":"I do not have a personal budget for professional development. Everything I do is independent of my role."},{"id":67,"sector":"Corporate L&D","level":"Mid-level","region":"North America","themes":["Employer & workplace conditions","Leadership not getting it"],"quote":"L&D is the most critical function for an organization to succeed in a rapidly changing environment, and I do not think companies see that, and will fail because of it."},{"id":68,"sector":"Gov / K-12 / Nonprofit","level":"Senior-level","region":"North America","themes":["Employer & workplace conditions"],"quote":"Long work hours and high expectations drain my energy on a daily basis."},{"id":69,"sector":"Corporate L&D","level":"Mid-level","region":"Asia-Pacific","themes":["Industry / profession self-critique"],"quote":"The professionals who thrive will be the ones who share what they're actually building, not just what they think sounds good."},{"id":72,"sector":"Higher Ed","level":"Entry level","region":"North America","themes":["PD market & associations"],"quote":"Networking events are very few in this industry compared to other industries, although this industry is growing exponentially."},{"id":73,"sector":"Higher Ed","level":"Senior-level","region":"North America","themes":["Higher ed institutional critique"],"quote":"Universities are still too traditional in their teaching strategies."},{"id":75,"sector":"Corporate L&D","level":"Mid-level","region":"North America","themes":["Industry / profession self-critique"],"quote":"Stop being order-takers and AI-button-pushers."},{"id":78,"sector":"Higher Ed","level":"Senior-level","region":"Europe","themes":["Industry / profession self-critique"],"quote":"The field positions it as something that learning professionals need to help solve, while simultaneously accepting that we're pointless."},{"id":80,"sector":"Corporate L&D","level":"Senior-level","region":"Europe","themes":["Industry / profession self-critique"],"quote":"Learning is bought by the yard, minutes, days, content blocks, instead of on the basis of business outcomes."},{"id":82,"sector":"Gov / K-12 / Nonprofit","level":"Senior-level","region":"North America","themes":["Industry / profession self-critique"],"quote":"Most people in the profession don't really understand what [a meaningful learning experience] actually looks like or how to do it."},{"id":83,"sector":"Gov / K-12 / Nonprofit","level":"Mid-level","region":"North America","themes":["Employer & workplace conditions","Leadership not getting it"],"quote":"Upper management not ready for change. Because we are a gov't agency it takes longer to get anyone onboard."},{"id":84,"sector":"Gov / K-12 / Nonprofit","level":"Mid-level","region":"North America","themes":["Employer & workplace conditions","PD market & associations"],"quote":"There are not enough professional development days, and the days we do have are not always used well."},{"id":87,"sector":"Other","level":"Senior-level","region":"North America","themes":["PD market & associations"],"quote":"Lots of options for AI education, but not all are immediately relevant to your day to day work."},{"id":88,"sector":"Corporate L&D","level":"Senior-level","region":"Africa","themes":["PD market & associations"],"quote":"Online learning and traditional modes of professional development are slowly decaying."},{"id":89,"sector":"Higher Ed","level":"Mid-level","region":"North America","themes":["Higher ed institutional critique"],"quote":"Most higher ed programs are not agile enough to pivot their curriculum at the same pace our landscape is. Most faculty are in panic mode, reverting to old pattern."},{"id":94,"sector":"Higher Ed","level":"Entry level","region":"North America","themes":["PD market & associations"],"quote":"The market is flooded and we are in a deep fog as to what the best use of our time and money is."},{"id":98,"sector":"Consulting","level":"Senior-level","region":"Europe","themes":["Industry / profession self-critique"],"quote":"Less industry fragmentation would be a plus. Industry standards would be the next frontier."},{"id":99,"sector":"Corporate L&D","level":"Mid-level","region":"North America","themes":["Leadership not getting it"],"quote":"We need to combine forces and define what the most effective hybrid roles should look like instead of letting large corporate leadership continue to do so."},{"id":103,"sector":"Higher Ed","level":"Senior-level","region":"North America","themes":["Industry / profession self-critique"],"quote":"Most online learning content is mediocre. How do we go from fine to good to great?"},{"id":104,"sector":"Consulting","level":"Senior-level","region":"North America","themes":["Industry / profession self-critique"],"quote":"Our field is saturated, and the role of development for ISD is the most saturated and the one most ripe for being eliminated."},{"id":105,"sector":"Higher Ed","level":"Senior-level","region":"North America","themes":["Employer & workplace conditions"],"quote":"The tyranny of the urgent continues to limit the time I have to stop, think, plan, implement, evaluate, and try again."},{"id":106,"sector":"Corporate L&D","level":"Senior-level","region":"North America","themes":["Industry / profession self-critique"],"quote":"Change is slow to come unless there are champions and, more importantly, results."},{"id":112,"sector":"Higher Ed","level":"Senior-level","region":"North America","themes":["Industry / profession self-critique","PD market & associations"],"quote":"Ed tech gets hyped, everyone rushes to upskill in a specific tool, and over time we realize it was a waste of time."},{"id":115,"sector":"Corporate L&D","level":"Senior-level","region":"North America","themes":["PD market & associations"],"quote":"The training I've designed for myself is a lot better than anything I've ever paid for."},{"id":118,"sector":"Higher Ed","level":"Senior-level","region":"North America","themes":["Industry / profession self-critique"],"quote":"The biggest barriers are the rapid pace of change and lack of institutional alignment."},{"id":119,"sector":"Other","level":"Senior-level","region":"North America","themes":["Employer & workplace conditions","Leadership not getting it"],"quote":"It takes extra resources and influencing leaders differently to invest in me."},{"id":123,"sector":"Higher Ed","level":"Senior-level","region":"North America","themes":["Leadership not getting it"],"quote":"Employers aren't comprehensively preparing for the future, but are making knee-jerk responses."},{"id":124,"sector":"Consulting","level":"Senior-level","region":"North America","themes":["Employer & workplace conditions","Leadership not getting it","How AI is being imposed"],"quote":"I fear we are being squeezed out due to people's misguided understanding of AI. L&D budgets are being scrutinized."},{"id":126,"sector":"Higher Ed","level":"Entry level","region":"North America","themes":["Employer & workplace conditions","Higher ed institutional critique"],"quote":"My department just takes credit for it, and I'm not motivated to keep pushing boundaries when the team and university don't seem to care."},{"id":127,"sector":"Higher Ed","level":"Mid-level","region":"North America","themes":["Employer & workplace conditions"],"quote":"In theory, work is supposed to allow me time, that isn't happening at all."},{"id":132,"sector":"Corporate L&D","level":"Mid-level","region":"North America","themes":["Employer & workplace conditions","Leadership not getting it","How AI is being imposed"],"quote":"I'm annoyed that I have to pile AI expertise on top of the longstanding issue of employers expecting us to be jacks of all trades."}],"subthemes":["Employer & workplace conditions","Leadership not getting it","Industry / profession self-critique","Higher ed institutional critique","PD market & associations","How AI is being imposed"]};
+
+const SECTORS = ["Higher Ed","Corporate L&D","Gov / K-12 / Nonprofit","Consulting","Other"];
+const LEVELS = ["Entry level","Mid-level","Senior-level"];
+const SHORT_SECTOR = {"Higher Ed":"Higher Ed","Corporate L&D":"Corporate","Gov / K-12 / Nonprofit":"Gov / K12 / NP","Consulting":"Consulting","Other":"Other"};
+const SHORT_THEME = {"Employer & workplace conditions":"Employer &\nworkplace","Leadership not getting it":"Leadership\nnot getting it","Industry / profession self-critique":"Industry\nself-critique","Higher ed institutional critique":"Higher ed\ninstitutional","PD market & associations":"PD market &\nassociations","How AI is being imposed":"How AI is\nbeing imposed"};
+
+let axis = "sector";
+let selected = null;
+
+function colorClass(n) {
+  if (n === 0) return "c0";
+  if (n === 1) return "c1";
+  if (n === 2) return "c2";
+  if (n === 3) return "c3";
+  if (n <= 6) return "c4";
+  return "c5";
+}
+
+function render() {
+  const cols = axis === "sector" ? SECTORS : LEVELS;
+  const grid = document.getElementById("grid");
+  grid.style.gridTemplateColumns = `180px repeat(${cols.length}, 1fr)`;
+
+  let html = '<div class="corner"></div>';
+  for (const col of cols) {
+    const short = axis === "sector" ? SHORT_SECTOR[col] : col;
+    html += `<div class="col-label">${short}</div>`;
+  }
+
+  for (const theme of IC_DATA.subthemes) {
+    const shortTheme = SHORT_THEME[theme].replace(/\n/g, "<br>");
+    html += `<div class="row-label">${shortTheme}</div>`;
+    for (const col of cols) {
+      const matches = IC_DATA.records.filter(r =>
+        r.themes.includes(theme) && (axis === "sector" ? r.sector === col : r.level === col)
+      );
+      const n = matches.length;
+      const cls = colorClass(n);
+      const isSel = selected && selected.theme === theme && selected.col === col;
+      const selClass = isSel ? " selected" : "";
+      if (n === 0) {
+        html += `<div class="cell ${cls}">0</div>`;
+      } else {
+        const safeTheme = theme.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+        const safeCol = col.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+        html += `<button class="cell ${cls}${selClass}" onclick="select('${safeTheme}','${safeCol}')" aria-label="${n} respondents. ${theme}. ${col}">${n}</button>`;
+      }
+    }
+  }
+  grid.innerHTML = html;
+}
+
+function select(theme, col) {
+  selected = { theme, col };
+  render();
+  renderPanel();
+}
+
+function renderPanel() {
+  const panel = document.getElementById("panel");
+  if (!selected) {
+    panel.innerHTML = '<div class="panel-empty">Tap any colored cell to read the quotes behind it. Color intensity shows how many respondents landed in that cell. It is not a measure of how harsh the critique is.</div>';
+    return;
+  }
+  const { theme, col } = selected;
+  const matches = IC_DATA.records.filter(r =>
+    r.themes.includes(theme) && (axis === "sector" ? r.sector === col : r.level === col)
+  );
+  let html = `<div class="panel-head"><div class="panel-title">${theme} &middot; ${col}</div><div class="panel-count">${matches.length} respondent${matches.length === 1 ? '' : 's'}</div></div>`;
+  for (const r of matches) {
+    const metaBits = [];
+    if (axis === "sector") metaBits.push(r.level);
+    else metaBits.push(r.sector);
+    metaBits.push(r.region);
+    html += `<div class="quote-block"><p class="quote-text">${r.quote}</p><div class="quote-meta">${metaBits.join(" &middot; ")}</div></div>`;
+  }
+  panel.innerHTML = html;
+  setTimeout(() => panel.scrollIntoView({ behavior: "smooth", block: "nearest" }), 50);
+}
+
+function setAxis(newAxis) {
+  axis = newAxis;
+  selected = null;
+  document.getElementById("tab-sector").classList.toggle("active", axis === "sector");
+  document.getElementById("tab-level").classList.toggle("active", axis === "level");
+  render();
+  renderPanel();
+}
+
+render();
+</script>
+</body>
+</html>

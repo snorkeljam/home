@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WISE Scales Global Implementation Map</title>
+
+    <!-- Leaflet Map Library -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+
+    <!-- Google Fonts for JLX branding -->
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --jlx-orange: #FF6E00;
+            --jlx-purple: #831A78;
+            --jlx-mint: #46F3BB;
+            --jlx-navy: #1C3678;
+            --jlx-light-gray: #E9EDEE;
+            --jlx-charcoal: #293133;
+            --jlx-text: #1A1A1A;
+            --jlx-white: #FFFFFF;
+            --jlx-gradient: linear-gradient(135deg, #831A78 0%, #FF6E00 100%);
+            --font-main: 'Open Sans', Arial, sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-main);
+            background: var(--jlx-light-gray);
+            color: var(--jlx-text);
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .container {
+            display: flex;
+            height: 100vh;
+            gap: 0;
+        }
+
+        .sidebar {
+            width: 320px;
+            background: var(--jlx-white);
+            border-right: 2px solid var(--jlx-orange);
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 2px 0 8px rgba(0,0,0,0.1);
+        }
+
+        .sidebar-header {
+            background: var(--jlx-gradient);
+            color: var(--jlx-white);
+            padding: 24px 16px;
+            text-align: center;
+            border-bottom: 3px solid var(--jlx-orange);
+        }
+
+        .sidebar-header h1 {
+            font-size: 22px;
+            font-weight: 800;
+            margin-bottom: 4px;
+            letter-spacing: -0.5px;
+        }
+
+        .sidebar-header p {
+            font-size: 12px;
+            font-weight: 300;
+            opacity: 0.9;
+        }
+
+        .sidebar-content {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .section {
+            margin-bottom: 24px;
+        }
+
+        .section-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--jlx-orange);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+            border-bottom: 1px solid var(--jlx-light-gray);
+            padding-bottom: 8px;
+        }
+
+        .filter-group {
+            margin-bottom: 16px;
+        }
+
+        .filter-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--jlx-charcoal);
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px;
+            margin-bottom: 6px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .checkbox-item:hover {
+            background: var(--jlx-light-gray);
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+            accent-color: var(--jlx-orange);
+        }
+
+        .checkbox-item label {
+            font-size: 13px;
+            cursor: pointer;
+            flex: 1;
+        }
+
+        .stats-panel {
+            background: var(--jlx-light-gray);
+            border-left: 4px solid var(--jlx-orange);
+            padding: 14px;
+            border-radius: 4px;
+            margin-bottom: 16px;
+        }
+
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            font-size: 12px;
+        }
+
+        .stat-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .stat-label {
+            font-weight: 600;
+            color: var(--jlx-charcoal);
+        }
+
+        .stat-value {
+            font-weight: 700;
+            color: var(--jlx-orange);
+            font-size: 14px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+            font-size: 12px;
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 2px solid var(--jlx-charcoal);
+        }
+
+        .legend-label {
+            color: var(--jlx-text);
+            font-weight: 500;
+        }
+
+        .tool-legend {
+            font-size: 11px;
+            color: #666;
+            padding: 8px;
+            background: var(--jlx-light-gray);
+            border-radius: 4px;
+            margin-top: 8px;
+        }
+
+        .map-container {
+            flex: 1;
+            position: relative;
+            background: var(--jlx-white);
+        }
+
+        #map {
+            width: 100%;
+            height: 100%;
+        }
+
+        .leaflet-popup-content-wrapper {
+            border-radius: 6px;
+            border-left: 4px solid var(--jlx-orange);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        }
+
+        .popup-content {
+            font-family: var(--font-main);
+            font-size: 12px;
+            color: var(--jlx-text);
+        }
+
+        .popup-content h3 {
+            color: var(--jlx-orange);
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            border-bottom: 1px solid var(--jlx-light-gray);
+            padding-bottom: 6px;
+        }
+
+        .popup-field {
+            margin-bottom: 6px;
+            line-height: 1.4;
+        }
+
+        .popup-field strong {
+            color: var(--jlx-charcoal);
+            font-weight: 600;
+            display: inline-block;
+            min-width: 90px;
+        }
+
+        .popup-field a {
+            color: var(--jlx-orange);
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .popup-field a:hover {
+            text-decoration: underline;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-weight: 600;
+            font-size: 11px;
+        }
+
+        .status-completed {
+            background: #D4EDDA;
+            color: #155724;
+        }
+
+        .status-planned {
+            background: #FFF3CD;
+            color: #856404;
+        }
+
+        .toggle-boundaries {
+            margin-top: 16px;
+        }
+
+        .toggle-btn {
+            width: 100%;
+            padding: 10px;
+            background: var(--jlx-orange);
+            color: var(--jlx-white);
+            border: none;
+            border-radius: 4px;
+            font-family: var(--font-main);
+            font-weight: 600;
+            font-size: 12px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .toggle-btn:hover {
+            background: #E55A00;
+        }
+
+        .info-text {
+            font-size: 11px;
+            color: #999;
+            margin-top: 8px;
+            line-height: 1.4;
+        }
+
+        .scroll-section {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--jlx-light-gray);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--jlx-orange);
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #E55A00;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 280px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h1>WISE Scales</h1>
+                <p>Global Implementation Sites</p>
+            </div>
+
+            <div class="sidebar-content">
+                <div class="scroll-section">
+                    <!-- Statistics -->
+                    <div class="section">
+                        <div class="section-title">📊 Statistics</div>
+                        <div class="stats-panel">
+                            <div class="stat-item">
+                                <span class="stat-label">Total Sites</span>
+                                <span class="stat-value" id="stat-total">0</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Countries</span>
+                                <span class="stat-value" id="stat-countries">0</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Active (Completed)</span>
+                                <span class="stat-value" id="stat-completed">0</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Planned</span>
+                                <span class="stat-value" id="stat-planned">0</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Filters: Status -->
+                    <div class="section">
+                        <div class="section-title">🎯 Filter by Status</div>
+                        <div class="filter-group">
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="filter-completed" checked>
+                                <label for="filter-completed">✓ Completed</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="filter-planned" checked>
+                                <label for="filter-planned">🔶 Planned</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Filters: Tool Type -->
+                    <div class="section">
+                        <div class="section-title">🔧 Filter by Tool</div>
+                        <div class="filter-group">
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="filter-iwise12" checked data-tool="IWISE-12">
+                                <label for="filter-iwise12">IWISE-12</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="filter-hwise12" checked data-tool="HWISE-12">
+                                <label for="filter-hwise12">HWISE-12</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="filter-iwise4" checked data-tool="IWISE-4">
+                                <label for="filter-iwise4">IWISE-4</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="filter-hwise4" checked data-tool="HWISE-4">
+                                <label for="filter-hwise4">HWISE-4</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Legend -->
+                    <div class="section">
+                        <div class="section-title">📍 Legend</div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: #28A745;"></div>
+                            <span class="legend-label">Completed</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: #FFC107;"></div>
+                            <span class="legend-label">Planned</span>
+                        </div>
+                        <div class="tool-legend">
+                            Colors indicate implementation status. Tool type shown in popup.
+                        </div>
+                    </div>
+
+                    <!-- Boundaries Toggle -->
+                    <div class="section toggle-boundaries">
+                        <button class="toggle-btn" id="toggle-boundaries">Show Country Borders</button>
+                        <p class="info-text">Toggle country boundaries to focus on implementation sites.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Map -->
+        <div class="map-container">
+            <div id="map"></div>
+        </div>
+    </div>
+
+    <script>
+        // Color configuration
+        const colors = {
+            completed: '#28A745',
+            planned: '#FFC107'
+        };
+
+        // Country centroids dataset (latitude, longitude for country centers)
+        const countryCentroids = {
+            "Algeria": [28.0339, 1.6596],
+            "Bangladesh": [23.6850, 90.3563],
+            "Benin": [9.3077, 2.3158],
+            "Brazil": [-14.2350, -51.9253],
+            "Burkina Faso": [12.2383, -1.5616],
+            "Cameroon": [3.8480, 11.5021],
+            "China": [35.8617, 104.1954],
+            "Congo (Brazzaville)": [-4.0383, 21.7587],
+            "Egypt": [26.8206, 30.8025],
+            "Ethiopia": [9.1450, 40.4897],
+            "Ghana": [7.3697, -5.3677],
+            "Guinea": [9.9456, -9.6966],
+            "Haiti": [18.9712, -72.2852],
+            "India": [20.5937, 78.9629],
+            "Indonesia": [-0.7893, 113.9213],
+            "Kenya": [-0.0236, 37.9062],
+            "Lesotho": [-29.6100, 28.2336],
+            "Malawi": [-13.2543, 34.3015],
+            "Mali": [17.5707, -3.9962],
+            "Mexico": [23.6345, -102.5528],
+            "Mozambique": [-18.6657, 35.5296],
+            "Nepal": [28.3949, 84.1240],
+            "Niger": [17.6078, 8.6753],
+            "Nigeria": [9.0820, 8.6753],
+            "Pakistan": [30.3753, 69.3451],
+            "Peru": [-9.1900, -75.0152],
+            "Philippines": [12.8797, 121.7740],
+            "Rwanda": [-1.9536, 29.8739],
+            "Senegal": [14.4974, -14.4524],
+            "Sierra Leone": [8.4606, -11.7799],
+            "South Africa": [-30.5595, 22.9375],
+            "South Sudan": [6.8770, 31.3070],
+            "Sudan": [12.8628, 30.8025],
+            "Tanzania": [-6.3690, 34.8888],
+            "Togo": [6.1256, 1.2324],
+            "Uganda": [1.3733, 32.2903],
+            "Vietnam": [14.0583, 108.2772],
+            "Yemen": [15.5527, 48.5164],
+            "Zambia": [-13.1939, 27.8493],
+            "Zimbabwe": [-19.0154, 29.1549],
+            "Afghanistan": [33.9391, 67.2994],
+            "Albania": [41.1533, 20.1683],
+            "Angola": [-11.2027, 17.8739],
+            "Argentina": [-38.4161, -63.6167],
+            "Armenia": [40.0691, 45.0382],
+            "Azerbaijan": [40.1431, 47.5769],
+            "Belize": [17.1899, -88.7979],
+            "Bolivia": [-16.2902, -63.5887],
+            "Bosnia and Herzegovina": [43.9159, 17.6791],
+            "Botswana": [-22.3285, 24.6849],
+            "Bulgaria": [42.7339, 25.4858],
+            "Cambodia": [12.5657, 104.9910],
+            "Colombia": [4.5709, -74.2973],
+            "Comoros": [-11.8750, 43.3333],
+            "Costa Rica": [9.7489, -83.7534],
+            "Cyprus": [34.9249, 33.4299],
+            "Côte d'Ivoire": [7.5400, -5.5471],
+            "Dominican Republic": [18.7357, -70.1627],
+            "Ecuador": [-1.8312, -78.1834],
+            "El Salvador": [13.7942, -88.8965],
+            "Eritrea": [15.1794, 39.7823],
+            "Estonia": [58.5953, 25.0136],
+            "Eswatini": [-26.5225, 31.4659],
+            "Fiji": [-17.7134, 178.0650],
+            "Gabon": [-0.8037, 11.6045],
+            "Gambia": [13.4549, -14.5480],
+            "Georgia": [42.3154, 43.3569],
+            "Grenada": [12.1165, -61.6790],
+            "Guatemala": [15.7835, -90.2308],
+            "Guinea-Bissau": [11.8037, -15.1804],
+            "Guyana": [4.8604, -58.9302],
+            "Honduras": [15.2000, -86.2419],
+            "Hungary": [47.1625, 19.5033],
+            "Iran": [32.4279, 53.6880],
+            "Iraq": [33.2232, 43.6793],
+            "Israel": [31.0461, 34.8516],
+            "Jamaica": [18.1096, -77.2975],
+            "Jordan": [30.5852, 36.2384],
+            "Kazakhstan": [48.0196, 66.9237],
+            "Kyrgyzstan": [41.5015, 74.7167],
+            "Laos": [19.8523, 102.4955],
+            "Latvia": [56.8796, 24.6032],
+            "Lebanon": [33.8547, 35.8623],
+            "Liberia": [6.4281, -9.4295],
+            "Libya": [26.3351, 17.2283],
+            "Lithuania": [55.1694, 23.8813],
+            "Madagascar": [-18.7669, 46.8691],
+            "Mauritania": [21.0079, -10.9408],
+            "Mauritius": [-20.3484, 57.5522],
+            "Moldova": [47.4116, 28.3699],
+            "Mongolia": [46.8625, 103.8467],
+            "Montenegro": [42.7087, 19.3744],
+            "Morocco": [31.7917, -7.0926],
+            "Myanmar": [21.9162, 95.9560],
+            "Namibia": [-22.9375, 18.7331],
+            "Nicaragua": [12.8654, -85.2072],
+            "North Macedonia": [41.6086, 21.7453],
+            "Palestine": [31.9522, 35.2332],
+            "Panama": [8.7832, -80.7744],
+            "Papua New Guinea": [-6.3150, 143.9555],
+            "Paraguay": [-23.4425, -58.4438],
+            "Poland": [51.9194, 19.1451],
+            "Puerto Rico": [18.2208, -66.5901],
+            "Romania": [45.9432, 24.9668],
+            "Russia": [61.5240, 105.3188],
+            "Saint Lucia": [13.9094, -60.9789],
+            "Samoa": [-13.7590, -172.1046],
+            "San Marino": [43.9424, 12.4578],
+            "Sao Tome and Principe": [0.3570, 6.7314],
+            "Serbia": [44.0165, 21.0059],
+            "Seychelles": [-4.6796, 55.4920],
+            "Singapore": [1.3521, 103.8198],
+            "Slovakia": [48.6690, 19.6990],
+            "Slovenia": [46.1512, 14.9955],
+            "Solomon Islands": [-9.6457, 160.1562],
+            "Somalia": [5.1521, 46.1996],
+            "South Korea": [35.9078, 127.7669],
+            "Spain": [40.4637, -3.7492],
+            "Suriname": [3.9193, -56.0278],
+            "Sweden": [60.1282, 18.6435],
+            "Switzerland": [46.8182, 8.2275],
+            "Syria": [34.8021, 38.9968],
+            "Taiwan": [23.6978, 120.9605],
+            "Tajikistan": [38.8610, 71.2761],
+            "Thailand": [15.8700, 100.9925],
+            "Timor-Leste": [-8.8383, 125.9181],
+            "Trinidad and Tobago": [10.6918, -61.2225],
+            "Tunisia": [33.8869, 9.5375],
+            "Turkey": [38.9637, 35.2433],
+            "Turkmenistan": [38.9697, 59.5563],
+            "Ukraine": [48.3794, 31.1656],
+            "United Arab Emirates": [23.4241, 53.8478],
+            "United Kingdom": [55.3781, -3.4360],
+            "United States": [37.0902, -95.7129],
+            "Uruguay": [-32.5228, -55.7658],
+            "Uzbekistan": [41.3775, 64.5853],
+            "Venezuela": [6.4238, -66.5897],
+            "West Bank": [31.9522, 35.2332],
+            "Zambia": [-13.1939, 27.8493],
+            "Zimbabwe": [-19.0154, 29.1549]
+        };
+
+        // Initialize map centered on Africa
+        const map = L.map('map').setView([0, 20], 3);
+
+        // Add OpenStreetMap tiles
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+
+        // GeoJSON for country borders (lightweight world countries)
+        let boundariesLayer;
+        function loadBoundaries() {
+            if (boundariesLayer) {
+                map.removeLayer(boundariesLayer);
+            }
+            fetch('https://raw.githubusercontent.com/datasets/geo-countries/master/data/countries.geojson')
+                .then(response => response.json())
+                .then(data => {
+                    boundariesLayer = L.geoJSON(data, {
+                        style: {
+                            color: '#999',
+                            weight: 1,
+                            opacity: 0.3,
+                            fillOpacity: 0
+                        }
+                    }).addTo(map);
+                })
+                .catch(() => console.log('Boundaries GeoJSON unavailable'));
+        }
+        loadBoundaries();
+
+        // WISE data embedded directly
+        const wiseData = [
+            {"Country": "Algeria", "CODE": "DZA", "WB_Income-2023 data": "Upper middle income", "When collected": 2020.0, "Status": "Completed", "Source": "Gallup World Poll", "Tool": "IWISE-12", "More info": "https://gh.bmj.com/content/6/10/e006460", "Internal notes": null},
+            {"Country": "Bangladesh", "CODE": "BGD", "WB_Income-2023 data": "Lower middle income", "When collected": 2020.0, "Status": "Completed", "Source": "Gallup World Poll", "Tool": "IWISE-12", "More info": "https://gh.bmj.com/content/6/10/e006460", "Internal notes": null},
+            {"Country": "Benin", "CODE": "BEN", "WB_Income-2023 data": "Low income", "When collected": 2020.0, "Status": "Completed", "Source": "Gallup World Poll", "Tool": "IWISE-12", "More info": "https://gh.bmj.com/content/6/10/e006460", "Internal notes": null},
+            {"Country": "Brazil", "CODE": "BRA", "WB_Income-2023 data": "Upper middle income", "When collected": 2020.0, "Status": "Completed", "Source": "Gallup World Poll", "Tool": "IWISE-12", "More info": "https://gh.bmj.com/content/6/10/e006460", "Internal notes": null},
+            {"Country": "Burkina Faso", "CODE": "BFA", "WB_Income-2023 data": "Low income", "When collected": 2020.0, "Status": "Completed", "Source": "Gallup World Poll", "Tool": "IWISE-12", "More info": "https://gh.bmj.com/content/6/10/e006460", "Internal notes": null},
+            {"Country": "Cameroon", "CODE": "CMR", "WB_Income-2023 data": "Lower middle income", "When collected": 2020.0, "Status": "Completed", "Source": "Gallup World Poll", "Tool": "IWISE-12", "More info": "https://gh.bmj.com/content/6/10/e006460", "Internal notes": null},
+            {"Country": "China", "CODE": "CHN", "WB_Income-2023 data": "Upper middle income", "When collected": 2020.0, "Status": "Completed", "Source": "Gallup World Poll", "Tool": "IWISE-12", "More info": "https://gh.bmj.com/content/6/10/e006460", "Internal notes": null},
+            {"Country": "Congo (Brazzaville)", "CODE": "COG", "WB_Income-2023 data": "Lower middle income", "When collected": 2020.0, "Status": "Completed", "Source": "Gallup World Poll", "Tool": "IWISE-12", "More info": "https://gh.bmj.com/content/6/10/e006460", "Internal notes": null},
+            {"Country": "Egypt", "CODE": "EGY", "WB_Income-2023 data": "Lower middle income", "When collected": 2020.0, "Status": "Completed", "Source": "Gallup World Poll", "Tool": "IWISE-12", "More info": "https://gh.bmj.com/content/6/10/e006460", "Internal notes": null},
+            {"Country": "Ethiopia", "CODE": "ETH", "WB_Income-2023 data": "Low income", "When collected": 2020.0, "Status": "Completed", "Source": "Gallup World Poll", "Tool": "IWISE-12", "More info": "https://gh.bmj.com/content/6/10/e006460", "Internal notes": null},
+            {"Country": "Ghana", "CODE": "GHA", "WB_Income-2023 data": "Lower middle income", "When collected": 2020.0, "Status": "Completed", "Source": "Gallup World Poll", "Tool": "IWISE-12", "More info": "https://gh.bmj.com/content/6/10/e006460", "Internal notes": null},
+            {"Country": "Guinea", "CODE": "GIN", "WB_Income-2023 data": "Low income", "When collected": 2020.0, "Status": "Completed", "Source": "Gallup World Poll", "Tool": "IWISE-12", "More info": "https://gh.bmj.com/content/6/10/e006460", "Internal notes": null},
+            {"Country": "Haiti", "CODE": "HTI", "WB_Income-2023 data": "Low income", "When collected": 2020.0, "Status": "Completed", "Source": "Gallup World Poll", "Tool": "IWISE-12", "More info": "https://gh.bmj.com/content/6/10/e006460", "Internal notes": null},
+            {"Country": "India", "CODE": "IND", "WB_Income-2023 data": "Lower middle income", "When collected": 2020.0, "Status": "Completed", "Source": "Gallup World Poll", "Tool": "IWISE-12", "More info": "https://gh.bmj.com/content/6/10/e006460", "Internal notes": null},
+            {"Country": "Indonesia", "CODE": "IDN", "WB_Income-2023 data": "Lower middle income", "When collected": 2020.0, "Status": "Completed", "Source": "Gallup World Poll", "Tool": "IWISE-12", "More info": "https://gh.bmj.com/content/6/10/e006460", "Internal notes": null},
+            {"Country": "Kenya", "CODE": "KEN", "WB_Income-2023 data": "Lower middle income", "When collected": 2020.0, "Status": "Completed", "Source": "Gallup World Poll", "Tool": "IWISE-12", "More info": "https://gh.bmj.com/content/6/10/e006460", "Internal notes": null},
+            {"Country": "Lesotho", "CODE": "LSO", "WB_Income-2023 data": "Lower middle income", "When collected": 2020.0, "Status": "Completed", "Source": "Gallup World Poll", "Tool": "IWISE-12", "More info": "https://gh.bmj.com/content/6/10/e006460", "Internal notes": null},
+            {"Country": "Malawi", "CODE": "MWI", "WB_Income-2023 data": "Low income", "When collected": 2020.0, "Status": "Completed", "Source": "Gallup World Poll", "Tool": "IWISE-12", "More info": "https://gh.bmj.com/content/6/10/e006460", "Internal notes": null},
+            {"Country": "Mali", "CODE": "MLI", "WB_Income-2023 data": "Low income", "When collected": 2020.0, "Status": "Completed", "Source": "Gallup World Poll", "Tool": "IWISE-12", "More info": "https://gh.bmj.com/content/6/10/e006460", "Internal notes": null},
+            {"Country": "Mexico", "CODE": "MEX", "WB_Income-2023 data": "Upper middle income", "When collected": 2020.0, "Status": "Completed", "Source": "Gallup World Poll", "Tool": "IWISE-12", "More info": "https://gh.bmj.com/content/6/10/e006460", "Internal notes": null},
+            {"Country": "Mozambique", "CODE": "MOZ", "WB_Income-2023 data": "Low income", "When collected": 2020.0, "Status": "Completed", "Source": "Gallup World Poll", "Tool": "IWISE-12", "More info": "https://gh.bmj.com/content/6/10/e006460", "Internal notes": null},
+            {"Country": "Nepal", "CODE": "NPL", "WB_Income-2023 data": "Lower middle income", "When collected": 2020.0, "Status": "Completed", "Source": "Gallup World Poll", "Tool": "IWISE-12", "More info": "https://gh.bmj.com/content/6/10/e006460", "Internal notes": null},
+            {"Country": "Niger", "CODE": "NER", "WB_Income-2023 data": "Low income", "When collected": 2020.0, "Status": "Completed", "Source": "Gallup World Poll", "Tool": "IWISE-12", "More info": "https://gh.bmj.com/content/6/10/e006460", "Internal notes": null},
+            {"Country": "Nigeria", "CODE": "NGA", "WB_Income-2023 data": "Lower middle income", "When collected": 2020.0, "Status": "Completed", "Source": "Gallup World Poll", "Tool": "IWISE-12", "More info": "https://gh.bmj.com/content/6/10/e006460", "Internal notes": null},
+            {"Country": "Pakistan", "CODE": "PAK", "WB_Income-2023 data": "Lower middle income", "When collected": 2020.0, "Status": "Completed", "Source": "Gallup World Poll", "Tool": "IWISE-12", "More info": "https://gh.bmj.com/content/6/10/e006460", "Internal notes": null},
+            {"Country": "Peru", "CODE": "PER", "WB_Income-2023 data": "Upper middle income", "When collected": 2020.0, "Status": "Completed", "Source": "Gallup World Poll", "Tool": "IWISE-12", "More info": "https://gh.bmj.com/content/6/10/e006460", "Internal notes": null},
+            {"Country": "Philippines", "CODE": "PHL", "WB_Income-2023 data": "Lower middle income", "When collected": 2020.0, "Status": "Completed", "Source": "Gallup World Poll", "Tool": "IWISE-12", "More info": "https://gh.bmj.com/content/6/10/e006460", "Internal notes": null},
+            {"Country": "Rwanda", "CODE": "RWA", "WB_Income-2023 data": "Low income", "When collected": 2020.0, "Status": "Completed", "Source": "Gallup World Poll", "Tool": "IWISE-12", "More info": "https://gh.bmj.com/content/6/10/e006460", "Internal notes": null},
+            {"Country": "Senegal", "CODE": "SEN", "WB_Income-2023 data": "Lower middle income", "When collected": 2020.0, "Status": "Completed", "Source": "Gallup World Poll", "Tool": "IWISE-12", "More info": "https://gh.bmj.com/content/6/10/e006460", "Internal notes": null},
+            {"Country": "Sierra Leone", "CODE": "SLE", "WB_Income-2023 data": "Low income", "When collected": 2020.0, "Status": "Completed", "Source": "Gallup World Poll", "Tool": "IWISE-12", "More info": "https://gh.bmj.com/content/6/10/e006460", "Internal notes": null},
+            {"Country": "South Africa", "CODE": "ZAF", "WB_Income-2023 data": "Upper middle income", "When collected": 2020.0, "Status": "Completed", "Source": "Gallup World Poll", "Tool": "IWISE-12", "More info": "https://gh.bmj.com/content/6/10/e006460", "Internal notes": null},
+            {"Country": "South Sudan", "CODE": "SSD", "WB_Income-2023 data": "Low income", "When collected": 2020.0, "Status": "Completed", "Source": "Gallup World Poll", "Tool": "IWISE-12", "More info": "https://gh.bmj.com/content/6/10/e006460", "Internal notes": null},
+            {"Country": "Sudan", "CODE": "SDN", "WB_Income-2023 data": "Lower middle income", "When collected": 2020.0, "Status": "Completed", "Source": "Gallup World Poll", "Tool": "IWISE-12", "More info": "https://gh.bmj.com/content/6/10/e006460", "Internal notes": null},
+            {"Country": "Tanzania", "CODE": "TZA", "WB_Income-2023 data": "Low income", "When collected": 2020.0, "Status": "Completed", "Source": "Gallup World Poll", "Tool": "IWISE-12", "More info": "https://gh.bmj.com/content/6/10/e006460", "Internal notes": null},
+            {"Country": "Togo", "CODE": "TGO", "WB_Income-2023 data": "Low income", "When collected": 2020.0, "Status": "Completed", "Source": "Gallup World Poll", "Tool": "IWISE-12", "More info": "https://gh.bmj.com/content/6/10/e006460", "Internal notes": null},
+            {"Country": "Uganda", "CODE": "UGA", "WB_Income-2023 data": "Low income", "When collected": 2020.0, "Status": "Completed", "Source": "Gallup World Poll", "Tool": "IWISE-12", "More info": "https://gh.bmj.com/content/6/10/e006460", "Internal notes": null},
+            {"Country": "Vietnam", "CODE": "VNM", "WB_Income-2023 data": "Lower middle income", "When collected": 2020.0, "Status": "Completed", "Source": "Gallup World Poll", "Tool": "IWISE-12", "More info": "https://gh.bmj.com/content/6/10/e006460", "Internal notes": null},
+            {"Country": "Yemen", "CODE": "YEM", "WB_Income-2023 data": "Low income", "When collected": 2020.0, "Status": "Completed", "Source": "Gallup World Poll", "Tool": "IWISE-12", "More info": "https://gh.bmj.com/content/6/10/e006460", "Internal notes": null},
+            {"Country": "Zambia", "CODE": "ZMB", "WB_Income-2023 data": "Lower middle income", "When collected": 2020.0, "Status": "Completed", "Source": "Gallup World Poll", "Tool": "IWISE-12", "More info": "https://gh.bmj.com/content/6/10/e006460", "Internal notes": null},
+            {"Country": "Zimbabwe", "CODE": "ZWE", "WB_Income-2023 data": "Lower middle income", "When collected": 2020.0, "Status": "Completed", "Source": "Gallup World Poll", "Tool": "IWISE-12", "More info": "https://gh.bmj.com/content/6/10/e006460", "Internal notes": null},
+            {"Country": "Afghanistan", "CODE": "AFG", "WB_Income-2023 data": "Low income", "When collected": 2020.0, "Status": "Completed", "Source": "Gallup World Poll", "Tool": "IWISE-12", "More info": "https://gh.bmj.com/content/6/10/e006460", "Internal notes": null},
+            {"Country": "Albania", "CODE": "ALB", "WB_Income-2023 data": "Upper middle income", "When collected": 2020.0, "Status": "Completed", "Source": "Gallup World Poll", "Tool": "IWISE-12", "More info": "https://gh.bmj.com/content/6/10/e006460", "Internal notes": null},
+            {"Country": "Angola", "CODE": "AGO", "WB_Income-2023 data": "Lower middle income", "When collected": 2020.0, "Status": "Completed", "Source": "Gallup World Poll", "Tool": "IWISE-12", "More info": "https://gh.bmj.com/content/6/10/e006460", "Internal notes": null},
+            {"Country": "Argentina", "CODE": "ARG", "WB_Income-2023 data": "Upper middle income", "When collected": 2020.0, "Status": "Completed", "Source": "Gallup World Poll", "Tool": "HWISE-12", "More info": "https://gh.bmj.com/content/6/10/e006460", "Internal notes": null},
+            {"Country": "Armenia", "CODE": "ARM", "WB_Income-2023 data": "Upper middle income", "When collected": 2020.0, "Status": "Completed", "Source": "Gallup World Poll", "Tool": "HWISE-12", "More info": "https://gh.bmj.com/content/6/10/e006460", "Internal notes": null},
+            {"Country": "Azerbaijan", "CODE": "AZE", "WB_Income-2023 data": "Upper middle income", "When collected": 2021.0, "Status": "Planned", "Source": "TBD", "Tool": "IWISE-12", "More info": "https://example.com", "Internal notes": null},
+            {"Country": "Belize", "CODE": "BLZ", "WB_Income-2023 data": "Lower middle income", "When collected": 2020.0, "Status": "Completed", "Source": "Gallup World Poll", "Tool": "HWISE-12", "More info": "https://gh.bmj.com/content/6/10/e006460", "Internal notes": null},
+            {"Country": "Bolivia", "CODE": "BOL", "WB_Income-2023 data": "Lower middle income", "When collected": 2020.0, "Status": "Completed", "Source": "Gallup World Poll", "Tool": "IWISE-12", "More info": "https://gh.bmj.com/content/6/10/e006460", "Internal notes": null},
+            {"Country": "Bosnia and Herzegovina", "CODE": "BIH", "WB_Income-2023 data": "Upper middle income", "When collected": 2020.0, "Status": "Completed", "Source": "Gallup World Poll", "Tool": "IWISE-12", "More info": "https://gh.bmj.com/content/6/10/e006460", "Internal notes": null},
+            {"Country": "Botswana", "CODE": "BWA", "WB_Income-2023 data": "Upper middle income", "When collected": 2020.0, "Status": "Completed", "Source": "Gallup World Poll", "Tool": "IWISE-12", "More info": "https://gh.bmj.com/content/6/10/e006460", "Internal notes": null},
+            {"Country": "Bulgaria", "CODE": "BGR", "WB_Income-2023 data": "Upper middle income", "When collected": 2020.0, "Status": "Completed", "Source": "Gallup World Poll", "Tool": "IWISE-12", "More info": "https://gh.bmj.com/content/6/10/e006460", "Internal notes": null},
+            {"Country": "Cambodia", "CODE": "KHM", "WB_Income-2023 data": "Lower middle income", "When collected": 2020.0, "Status": "Completed", "Source": "Gallup World Poll", "Tool": "IWISE-12", "More info": "https://gh.bmj.com/content/6/10/e006460", "Internal notes": null},
+            {"Country": "Colombia", "CODE": "COL", "WB_Income-2023 data": "Upper middle income", "When collected": 2020.0, "Status": "Completed", "Source": "Gallup World Poll", "Tool": "IWISE-12", "More info": "https://gh.bmj.com/content/6/10/e006460", "Internal notes": null},
+            {"Country": "Comoros", "CODE": "COM", "WB_Income-2023 data": "Lower middle income", "When collected": 2020.0, "Status": "Completed", "Source": "Gallup World Poll", "Tool": "IWISE-12", "More info": "https://gh.bmj.com/content/6/10/e006460", "Internal notes": null},
+            {"Country": "Costa Rica", "CODE": "CRI", "WB_Income-2023 data": "Upper middle income", "When collected": 2020.0, "Status": "Completed", "Source": "Gallup World Poll", "Tool": "IWISE-12", "More info": "https://gh.bmj.com/content/6/10/e006460", "Internal notes": null},
+            {"Country": "Cyprus", "CODE": "CYP", "WB_Income-2023 data": "High income", "When collected": 2020.0, "Status": "Completed", "Source": "Gallup World Poll", "Tool": "IWISE-12", "More info": "https://gh.bmj.com/content/6/10/e006460", "Internal notes": null},
+            {"Country": "Côte d'Ivoire", "CODE": "CIV", "WB_Income-2023 data": "Lower middle income", "When collected": 2020.0, "Status": "Completed", "Source": "Gallup World Poll", "Tool": "IWISE-12", "More info": "https://gh.bmj.com/content/6/10/e006460", "Internal notes": null},
+            {"Country": "Dominican Republic", "CODE": "DOM", "WB_Income-2023 data": "Upper middle income", "When collected": 2020.0, "Status": "Completed", "Source": "Gallup World Poll", "Tool": "IWISE-12", "More info": "https://gh.bmj.com/content/6/10/e006460", "Internal notes": null},
+            {"Country": "Ecuador", "CODE": "ECU", "WB_Income-2023 data": "Upper middle income", "When collected": 2020.0, "Status": "Completed", "Source": "Gallup World Poll", "Tool": "IWISE-12", "More info": "https://gh.bmj.com/content/6/10/e006460", "Internal notes": null},
+            {"Country": "El Salvador", "CODE": "SLV", "WB_Income-2023 data": "Lower middle income", "When collected": 2020.0, "Status": "Completed", "Source": "Gallup World Poll", "Tool": "IWISE-12", "More info": "https://gh.bmj.com/content/6/10/e006460", "Internal notes": null},
+            {"Country": "Eritrea", "CODE": "ERI", "WB_Income-2023 data": "Low income", "When collected": 2020.0, "Status": "Completed", "Source": "Gallup World Poll", "Tool": "IWISE-12", "More info": "https://gh.bmj.com/content/6/10/e006460", "Internal notes": null},
+            {"Country": "Estonia", "CODE": "EST", "WB_Income-2023 data": "High income", "When collected": 2020.0, "Status": "Completed", "Source": "Gallup World Poll", "Tool": "IWISE-12", "More info": "https://gh.bmj.com/content/6/10/e006460", "Internal notes": null},
+            {"Country": "Eswatini", "CODE": "SWZ", "WB_Income-2023 data": "Lower middle income", "When collected": 2020.0, "Status": "Completed", "Source": "Gallup World Poll", "Tool": "IWISE-12", "More info": "https://gh.bmj.com/content/6/10/e006460", "Internal notes": null},
+            {"Country": "Fiji", "CODE": "FJI", "WB_Income-2023 data": "Upper middle income", "When collected": 2020.0, "Status": "Completed", "Source": "Gallup World Poll", "Tool": "IWISE-12", "More info": "https://gh.bmj.com/content/6/10/e006460", "Internal notes": null},
+            {"Country": "Gabon", "CODE": "GAB", "WB_Income-2023 data": "Upper middle income", "When collected": 2020.0, "Status": "Completed", "Source": "Gallup World Poll", "Tool": "IWISE-12", "More info": "https://gh.bmj.com/content/6/10/e006460", "Internal notes": null},
+            {"Country": "Gambia", "CODE": "GMB", "WB_Income-2023 data": "Low income", "When collected": 2020.0, "Status": "Completed", "Source": "Gallup World Poll", "Tool": "IWISE-12", "More info": "https://gh.bmj.com/content/6/10/e006460", "Internal notes": null},
+            {"Country": "Georgia", "CODE": "GEO", "WB_Income-2023 data": "Upper middle income", "When collected": 2020.0, "Status": "Completed", "Source": "Gallup World Poll", "Tool": "IWISE-12", "More info": "https://gh.bmj.com/content/6/10/e006460", "Internal notes": null},
+            {"Country": "Grenada", "CODE": "GRD", "WB_Income-2023 data": "Upper middle income", "When collected": 2020.0, "Status": "Completed", "Source": "Gallup World Poll", "Tool": "IWISE-12", "More info": "https://gh.bmj.com/content/6/10/e006460", "Internal notes": null},
+            {"Country": "Guatemala", "CODE": "GTM", "WB_Income-2023 data": "Lower middle income", "When collected": 2020.0, "Status": "Completed", "Source": "Gallup World Poll", "Tool": "IWISE-12", "More info": "https://gh.bmj.com/content/6/10/e006460", "Internal notes": null},
+            {"Country": "Guinea-Bissau", "CODE": "GNB", "WB_Income-2023 data": "Low income", "When collected": 2020.0, "Status": "Completed", "Source": "Gallup World Poll", "Tool": "IWISE-12", "More info": "https://gh.bmj.com/content/6/10/e006460", "Internal notes": null},
+            {"Country": "Guyana", "CODE": "GUY", "WB_Income-2023 data": "Upper middle income", "When collected": 2020.0, "Status": "Completed", "Source": "Gallup World Poll", "Tool": "IWISE-12", "More info": "https://gh.bmj.com/content/6/10/e006460", "Internal notes": null},
+            {"Country": "Honduras", "CODE": "HND", "WB_Income-2023 data": "Lower middle income", "When collected": 2020.0, "Status": "Completed", "Source": "Gallup World Poll", "Tool": "IWISE-12", "More info": "https://gh.bmj.com/content/6/10/e006460", "Internal notes": null},
+            {"Country": "Hungary", "CODE": "HUN", "WB_Income-2023 data": "High income", "When collected": 2020.0, "Status": "Completed", "Source": "Gallup World Poll", "Tool": "IWISE-12", "More info": "https://gh.bmj.com/content/6/10/e006460", "Internal notes": null},
+            {"Country": "Iran", "CODE": "IRN", "WB_Income-2023 data": "Upper middle income", "When collected": 2020.0, "Status": "Completed", "Source": "Gallup World Poll", "Tool": "IWISE-12", "More info": "https://gh.bmj.com/content/6/10/e006460", "Internal notes": null},
+            {"Country": "Iraq", "CODE": "IRQ", "WB_Income-2023 data": "Upper middle income", "When collected": 2020.0, "Status": "Completed", "Source": "Gallup World Poll", "Tool": "HWISE-4", "More info": "https://gh.bmj.com/content/6/10/e006460", "Internal notes": null},
+            {"Country": "Israel", "CODE": "ISR", "WB_Income-2023 data": "High income", "When collected": 2020.0, "Status": "Completed", "Source": "Gallup World Poll", "Tool": "IWISE-12", "More info": "https://gh.bmj.com/content/6/10/e006460", "Internal notes": null},
+            {"Country": "Jamaica", "CODE": "JAM", "WB_Income-2023 data": "Upper middle income", "When collected": 2020.0, "Status": "Completed", "Source": "Gallup World Poll", "Tool": "IWISE-12", "More info": "https://gh.bmj.com/content/6/10/e006460", "Internal notes": null},
+            {"Country": "Jordan", "CODE": "JOR", "WB_Income-2023 data": "Upper middle income", "When collected": 2020.0, "Status": "Completed", "Source": "Gallup World Poll", "Tool": "IWISE-12", "More info": "https://gh.bmj.com/content/6/10/e006460", "Internal notes": null},
+            {"Country": "Kazakhstan", "CODE": "KAZ", "WB_Income-2023 data": "Upper middle income", "When collected": 2020.0, "Status": "Completed", "Source": "Gallup World Poll", "Tool": "IWISE-12", "More info": "https://gh.bmj.com/content/6/10/e006460", "Internal notes": null},
+            {"Country": "Kyrgyzstan", "CODE": "KGZ", "WB_Income-2023 data": "Lower middle income", "When collected": 2020.0, "Status": "Completed", "Source": "Gallup World Poll", "Tool": "IWISE-12", "More info": "https://gh.bmj.com/content/6/10/e006460", "Internal notes": null},
+            {"Country": "Laos", "CODE": "LAO", "WB_Income-2023 data": "Lower middle income", "When collected": 2020.0, "Status": "Completed", "Source": "Gallup World Poll", "Tool": "IWISE-12", "More info": "https://gh.bmj.com/content/6/10/e006460", "Internal notes": null},
+            {"Country": "Latvia", "CODE": "LVA", "WB_Income-2023 data": "High income", "When collected": 2020.0, "Status": "Completed", "Source": "Gallup World Poll", "Tool": "IWISE-12", "More info": "https://gh.bmj.com/content/6/10/e006460", "Internal notes": null},
+            {"Country": "Lebanon", "CODE": "LBN", "WB_Income-2023 data": "Upper middle income", "When collected": 2020.0, "Status": "Completed", "Source": "Gallup World Poll", "Tool": "IWISE-12", "More info": "https://gh.bmj.com/content/6/10/e006460", "Internal notes": null},
+            {"Country": "Liberia", "CODE": "LBR", "WB_Income-2023 data": "Low income", "When collected": 2020.0, "Status": "Completed", "Source": "Gallup World Poll", "Tool": "IWISE-12", "More info": "https://gh.bmj.com/content/6/10/e006460", "Internal notes": null},
+            {"Country": "Libya", "CODE": "LBY", "WB_Income-2023 data": "Upper middle income", "When collected": 2020.0, "Status": "Completed", "Source": "Gallup World Poll", "Tool": "IWISE-12", "More info": "https://gh.bmj.com/content/6/10/e006460", "Internal notes": null},
+            {"Country": "Lithuania", "CODE": "LTU", "WB_Income-2023 data": "High income", "When collected": 2020.0, "Status": "Completed", "Source": "Gallup World Poll", "Tool": "IWISE-12", "More info": "https://gh.bmj.com/content/6/10/e006460", "Internal notes": null},
+            {"Country": "Madagascar", "CODE": "MDG", "WB_Income-2023 data": "Low income", "When collected": 2020.0, "Status": "Completed", "Source": "Gallup World Poll", "Tool": "IWISE-12", "More info": "https://gh.bmj.com/content/6/10/e006460", "Internal notes": null},
+            {"Country": "Mauritania", "CODE": "MRT", "WB_Income-2023 data": "Lower middle income", "When collected": 2020.0, "Status": "Completed", "Source": "Gallup World Poll", "Tool": "IWISE-12", "More info": "https://gh.bmj.com/content/6/10/e006460", "Internal notes": null},
+            {"Country": "Mauritius", "CODE": "MUS", "WB_Income-2023 data": "High income", "When collected": 2020.0, "Status": "Completed", "Source": "Gallup World Poll", "Tool": "IWISE-12", "More info": "https://gh.bmj.com/content/6/10/e006460", "Internal notes": null},
+            {"Country": "Moldova", "CODE": "MDA", "WB_Income-2023 data": "Lower middle income", "When collected": 2020.0, "Status": "Completed", "Source": "Gallup World Poll", "Tool": "IWISE-12", "More info": "https://gh.bmj.com/content/6/10/e006460", "Internal notes": null},
+            {"Country": "Mongolia", "CODE": "MNG", "WB_Income-2023 data": "Upper middle income", "When collected": 2020.0, "Status": "Completed", "Source": "Gallup World Poll", "Tool": "IWISE-12", "More info": "https://gh.bmj.com/content/6/10/e006460", "Internal notes": null},
+            {"Country": "Montenegro", "CODE": "MNE", "WB_Income-2023 data": "Upper middle income", "When collected": 2020.0, "Status": "Completed", "Source": "Gallup World Poll", "Tool": "IWISE-12", "More info": "https://gh.bmj.com/content/6/10/e006460", "Internal notes": null},
+            {"Country": "Morocco", "CODE": "MAR", "WB_Income-2023 data": "Lower middle income", "When collected": 2020.0, "Status": "Completed", "Source": "Gallup World Poll", "Tool": "IWISE-12", "More info": "https://gh.bmj.com/content/6/10/e006460", "Internal notes": null},
+            {"Country": "Myanmar", "CODE": "MMR", "WB_Income-2023 data": "Lower middle income", "When collected": 2020.0, "Status": "Completed", "Source": "Gallup World Poll", "Tool": "IWISE-12", "More info": "https://gh.bmj.com/content/6/10/e006460", "Internal notes": null},
+            {"Country": "Namibia", "CODE": "NAM", "WB_Income-2023 data": "Upper middle income", "When collected": 2020.0, "Status": "Completed", "Source": "Gallup World Poll", "Tool": "IWISE-12", "More info": "https://gh.bmj.com/content/6/10/e006460", "Internal notes": null},
+            {"Country": "Nicaragua", "CODE": "NIC", "WB_Income-2023 data": "Lower middle income", "When collected": 2020.0, "Status": "Completed", "Source": "Gallup World Poll", "Tool": "IWISE-12", "More info": "https://gh.bmj.com/content/6/10/e006460", "Internal notes": null},
+            {"Country": "North Macedonia", "CODE": "MKD", "WB_Income-2023 data": "Upper middle income", "When collected": 2020.0, "Status": "Completed", "Source": "Gallup World Poll", "Tool": "IWISE-12", "More info": "https://gh.bmj.com/content/6/10/e006460", "Internal notes": null},
+            {"Country": "Palestine", "CODE": "PSE", "WB_Income-2023 data": "Lower middle income", "When collected": 2020.0, "Status": "Completed", "Source": "Gallup World Poll", "Tool": "IWISE-12", "More info": "https://gh.bmj.com/content/6/10/e006460", "Internal notes": null},
+            {"Country": "Panama", "CODE": "PAN", "WB_Income-2023 data": "Upper middle income", "When collected": 2020.0, "Status": "Completed", "Source": "Gallup World Poll", "Tool": "IWISE-12", "More info": "https://gh.bmj.com/content/6/10/e006460", "Internal notes": null},
+            {"Country": "Papua New Guinea", "CODE": "PNG", "WB_Income-2023 data": "Lower middle income", "When collected": 2020.0, "Status": "Completed", "Source": "Gallup World Poll", "Tool": "IWISE-12", "More info": "https://gh.bmj.com/content/6/10/e006460", "Internal notes": null},
+            {"Country": "Paraguay", "CODE": "PRY", "WB_Income-2023 data": "Upper middle income", "When collected": 2020.0, "Status": "Completed", "Source": "Gallup World Poll", "Tool": "IWISE-12", "More info": "https://gh.bmj.com/content/6/10/e006460", "Internal notes": null},
+            {"Country": "Poland", "CODE": "POL", "WB_Income-2023 data": "High income", "When collected": 2020.0, "Status": "Completed", "Source": "Gallup World Poll", "Tool": "IWISE-12", "More info": "https://gh.bmj.com/content/6/10/e006460", "Internal notes": null},
+            {"Country": "Puerto Rico", "CODE": "PRI", "WB_Income-2023 data": "High income", "When collected": 2020.0, "Status": "Completed", "Source": "Gallup World Poll", "Tool": "IWISE-12", "More info": "https://gh.bmj.com/content/6/10/e006460", "Internal notes": null},
+            {"Country": "Romania", "CODE": "ROU", "WB_Income-2023 data": "High income", "When collected": 2020.0, "Status": "Completed", "Source": "Gallup World Poll", "Tool": "IWISE-12", "More info": "https://gh.bmj.com/content/6/10/e006460", "Internal notes": null},
+            {"Country": "Russia", "CODE": "RUS", "WB_Income-2023 data": "Upper middle income", "When collected": 2020.0, "Status": "Completed", "Source": "Gallup World Poll", "Tool": "IWISE-12", "More info": "https://gh.bmj.com/content/6/10/e006460", "Internal notes": null},
+            {"Country": "Saint Lucia", "CODE": "LCA", "WB_Income-2023 data": "Upper middle income", "When collected": 2020.0, "Status": "Completed", "Source": "Gallup World Poll", "Tool": "IWISE-12", "More info": "https://gh.bmj.com/content/6/10/e006460", "Internal notes": null},
+            {"Country": "Samoa", "CODE": "WSM", "WB_Income-2023 data": "Lower middle income", "When collected": 2020.0, "Status": "Completed", "Source": "Gallup World Poll", "Tool": "IWISE-12", "More info": "https://gh.bmj.com/content/6/10/e006460", "Internal notes": null},
+            {"Country": "San Marino", "CODE": "SMR", "WB_Income-2023 data": "High income", "When collected": 2020.0, "Status": "Completed", "Source": "Gallup World Poll", "Tool": "IWISE-12", "More info": "https://gh.bmj.com/content/6/10/e006460", "Internal notes": null},
+            {"Country": "Sao Tome and Principe", "CODE": "STP", "WB_Income-2023 data": "Lower middle income", "When collected": 2020.0, "Status": "Completed", "Source": "Gallup World Poll", "Tool": "IWISE-12", "More info": "https://gh.bmj.com/content/6/10/e006460", "Internal notes": null},
+            {"Country": "Serbia", "CODE": "SRB", "WB_Income-2023 data": "Upper middle income", "When collected": 2020.0, "Status": "Completed", "Source": "Gallup World Poll", "Tool": "IWISE-12", "More info": "https://gh.bmj.com/content/6/10/e006460", "Internal notes": null},
+            {"Country": "Seychelles", "CODE": "SYC", "WB_Income-2023 data": "High income", "When collected": 2020.0, "Status": "Completed", "Source": "Gallup World Poll", "Tool": "IWISE-12", "More info": "https://gh.bmj.com/content/6/10/e006460", "Internal notes": null},
+            {"Country": "Singapore", "CODE": "SGP", "WB_Income-2023 data": "High income", "When collected": 2020.0, "Status": "Completed", "Source": "Gallup World Poll", "Tool": "IWISE-12", "More info": "https://gh.bmj.com/content/6/10/e006460", "Internal notes": null},
+            {"Country": "Slovakia", "CODE": "SVK", "WB_Income-2023 data": "High income", "When collected": 2020.0, "Status": "Completed", "Source": "Gallup World Poll", "Tool": "IWISE-12", "More info": "https://gh.bmj.com/content/6/10/e006460", "Internal notes": null},
+            {"Country": "Slovenia", "CODE": "SVN", "WB_Income-2023 data": "High income", "When collected": 2020.0, "Status": "Completed", "Source": "Gallup World Poll", "Tool": "IWISE-12", "More info": "https://gh.bmj.com/content/6/10/e006460", "Internal notes": null},
+            {"Country": "Solomon Islands", "CODE": "SLB", "WB_Income-2023 data": "Lower middle income", "When collected": 2020.0, "Status": "Completed", "Source": "Gallup World Poll", "Tool": "IWISE-12", "More info": "https://gh.bmj.com/content/6/10/e006460", "Internal notes": null},
+            {"Country": "Somalia", "CODE": "SOM", "WB_Income-2023 data": "Low income", "When collected": 2020.0, "Status": "Completed", "Source": "Gallup World Poll", "Tool": "IWISE-12", "More info": "https://gh.bmj.com/content/6/10/e006460", "Internal notes": null},
+            {"Country": "South Korea", "CODE": "KOR", "WB_Income-2023 data": "High income", "When collected": 2020.0, "Status": "Completed", "Source": "Gallup World Poll", "Tool": "IWISE-12", "More info": "https://gh.bmj.com/content/6/10/e006460", "Internal notes": null},
+            {"Country": "Spain", "CODE": "ESP", "WB_Income-2023 data": "High income", "When collected": 2020.0, "Status": "Completed", "Source": "Gallup World Poll", "Tool": "IWISE-12", "More info": "https://gh.bmj.com/content/6/10/e006460", "Internal notes": null},
+            {"Country": "Suriname", "CODE": "SUR", "WB_Income-2023 data": "Upper middle income", "When collected": 2020.0, "Status": "Completed", "Source": "Gallup World Poll", "Tool": "IWISE-12", "More info": "https://gh.bmj.com/content/6/10/e006460", "Internal notes": null},
+            {"Country": "Sweden", "CODE": "SWE", "WB_Income-2023 data": "High income", "When collected": 2020.0, "Status": "Completed", "Source": "Gallup World Poll", "Tool": "IWISE-12", "More info": "https://gh.bmj.com/content/6/10/e006460", "Internal notes": null},
+            {"Country": "Switzerland", "CODE": "CHE", "WB_Income-2023 data": "High income", "When collected": 2020.0, "Status": "Completed", "Source": "Gallup World Poll", "Tool": "IWISE-12", "More info": "https://gh.bmj.com/content/6/10/e006460", "Internal notes": null},
+            {"Country": "Syria", "CODE": "SYR", "WB_Income-2023 data": "Lower middle income", "When collected": 2020.0, "Status": "Completed", "Source": "Gallup World Poll", "Tool": "IWISE-12", "More info": "https://gh.bmj.com/content/6/10/e006460", "Internal notes": null},
+            {"Country": "Taiwan", "CODE": "TWN", "WB_Income-2023 data": "High income", "When collected": 2020.0, "Status": "Completed", "Source": "Gallup World Poll", "Tool": "HWISE-4", "More info": "https://gh.bmj.com/content/6/10/e006460", "Internal notes": null},
+            {"Country": "Tajikistan", "CODE": "TJK", "WB_Income-2023 data": "Lower middle income", "When collected": 2020.0, "Status": "Completed", "Source": "Gallup World Poll", "Tool": "IWISE-12", "More info": "https://gh.bmj.com/content/6/10/e006460", "Internal notes": null},
+            {"Country": "Thailand", "CODE": "THA", "WB_Income-2023 data": "Upper middle income", "When collected": 2020.0, "Status": "Completed", "Source": "Gallup World Poll", "Tool": "IWISE-12", "More info": "https://gh.bmj.com/content/6/10/e006460", "Internal notes": null},
+            {"Country": "Timor-Leste", "CODE": "TLS", "WB_Income-2023 data": "Lower middle income", "When collected": 2020.0, "Status": "Completed", "Source": "Gallup World Poll", "Tool": "HWISE-4", "More info": "https://gh.bmj.com/content/6/10/e006460", "Internal notes": null},
+            {"Country": "Trinidad and Tobago", "CODE": "TTO", "WB_Income-2023 data": "High income", "When collected": 2020.0, "Status": "Completed", "Source": "Gallup World Poll", "Tool": "IWISE-12", "More info": "https://gh.bmj.com/content/6/10/e006460", "Internal notes": null},
+            {"Country": "Tunisia", "CODE": "TUN", "WB_Income-2023 data": "Lower middle income", "When collected": 2020.0, "Status": "Completed", "Source": "Gallup World Poll", "Tool": "IWISE-12", "More info": "https://gh.bmj.com/content/6/10/e006460", "Internal notes": null},
+            {"Country": "Turkey", "CODE": "TUR", "WB_Income-2023 data": "Upper middle income", "When collected": 2020.0, "Status": "Completed", "Source": "Gallup World Poll", "Tool": "IWISE-12", "More info": "https://gh.bmj.com/content/6/10/e006460", "Internal notes": null},
+            {"Country": "Turkmenistan", "CODE": "TKM", "WB_Income-2023 data": "Upper middle income", "When collected": 2021.0, "Status": "Planned", "Source": "TBD", "Tool": "IWISE-12", "More info": "https://example.com", "Internal notes": null},
+            {"Country": "Ukraine", "CODE": "UKR", "WB_Income-2023 data": "Lower middle income", "When collected": 2020.0, "Status": "Completed", "Source": "Gallup World Poll", "Tool": "IWISE-12", "More info": "https://gh.bmj.com/content/6/10/e006460", "Internal notes": null},
+            {"Country": "United Arab Emirates", "CODE": "ARE", "WB_Income-2023 data": "High income", "When collected": 2020.0, "Status": "Completed", "Source": "Gallup World Poll", "Tool": "IWISE-12", "More info": "https://gh.bmj.com/content/6/10/e006460", "Internal notes": null},
+            {"Country": "United Kingdom", "CODE": "GBR", "WB_Income-2023 data": "High income", "When collected": 2020.0, "Status": "Completed", "Source": "Gallup World Poll", "Tool": "IWISE-12", "More info": "https://gh.bmj.com/content/6/10/e006460", "Internal notes": null},
+            {"Country": "United States", "CODE": "USA", "WB_Income-2023 data": "High income", "When collected": 2020.0, "Status": "Completed", "Source": "Gallup World Poll", "Tool": "HWISE-12", "More info": "https://gh.bmj.com/content/6/10/e006460", "Internal notes": null},
+            {"Country": "Uruguay", "CODE": "URY", "WB_Income-2023 data": "High income", "When collected": 2020.0, "Status": "Completed", "Source": "Gallup World Poll", "Tool": "IWISE-12", "More info": "https://gh.bmj.com/content/6/10/e006460", "Internal notes": null},
+            {"Country": "Uzbekistan", "CODE": "UZB", "WB_Income-2023 data": "Lower middle income", "When collected": 2021.0, "Status": "Planned", "Source": "TBD", "Tool": "IWISE-12", "More info": "https://example.com", "Internal notes": null},
+            {"Country": "Venezuela", "CODE": "VEN", "WB_Income-2023 data": "Lower middle income", "When collected": 2020.0, "Status": "Completed", "Source": "Gallup World Poll", "Tool": "IWISE-12", "More info": "https://gh.bmj.com/content/6/10/e006460", "Internal notes": null}
+        ];
+
+        // Marker cluster for organization
+        const markers = {};
+
+        // Function to create marker
+        function createMarker(site) {
+            const coords = countryCentroids[site.Country];
+            if (!coords) {
+                console.warn(`No coordinates for ${site.Country}`);
+                return null;
+            }
+
+            const color = site.Status === 'Completed' ? colors.completed : colors.planned;
+            const marker = L.circleMarker([coords[0], coords[1]], {
+                radius: 8,
+                fillColor: color,
+                color: '#333',
+                weight: 2,
+                opacity: 0.9,
+                fillOpacity: 0.8
+            });
+
+            const popup = `
+                <div class="popup-content">
+                    <h3>${site.Country}</h3>
+                    <div class="popup-field"><strong>Status:</strong> <span class="status-badge status-${site.Status.toLowerCase()}">${site.Status}</span></div>
+                    <div class="popup-field"><strong>Tool:</strong> ${site.Tool}</div>
+                    <div class="popup-field"><strong>Year:</strong> ${site['When collected'] ? parseInt(site['When collected']) : 'N/A'}</div>
+                    <div class="popup-field"><strong>Income:</strong> ${site['WB_Income-2023 data']}</div>
+                    <div class="popup-field"><strong>Source:</strong> ${site.Source}</div>
+                    <div class="popup-field"><strong>More:</strong> <a href="${site['More info']}" target="_blank">View Details</a></div>
+                </div>
+            `;
+
+            marker.bindPopup(popup);
+            marker.data = site;
+            markers[site.Country] = marker;
+            marker.addTo(map);
+        }
+
+        // Populate map with initial markers
+        wiseData.forEach(createMarker);
+
+        // Update statistics
+        function updateStats() {
+            const visibleMarkers = Object.values(markers).filter(m => map.hasLayer(m));
+            const completedCount = visibleMarkers.filter(m => m.data.Status === 'Completed').length;
+            const plannedCount = visibleMarkers.filter(m => m.data.Status === 'Planned').length;
+            const countryCount = new Set(visibleMarkers.map(m => m.data.Country)).size;
+
+            document.getElementById('stat-total').textContent = visibleMarkers.length;
+            document.getElementById('stat-countries').textContent = countryCount;
+            document.getElementById('stat-completed').textContent = completedCount;
+            document.getElementById('stat-planned').textContent = plannedCount;
+        }
+
+        // Filter functionality
+        document.getElementById('filter-completed').addEventListener('change', applyFilters);
+        document.getElementById('filter-planned').addEventListener('change', applyFilters);
+        document.querySelectorAll('[data-tool]').forEach(checkbox => {
+            checkbox.addEventListener('change', applyFilters);
+        });
+
+        function applyFilters() {
+            const showCompleted = document.getElementById('filter-completed').checked;
+            const showPlanned = document.getElementById('filter-planned').checked;
+            const tools = Array.from(document.querySelectorAll('[data-tool]:checked')).map(cb => cb.dataset.tool);
+
+            Object.values(markers).forEach(marker => {
+                const statusMatch = (marker.data.Status === 'Completed' && showCompleted) ||
+                                   (marker.data.Status === 'Planned' && showPlanned);
+                const toolMatch = tools.includes(marker.data.Tool);
+
+                if (statusMatch && toolMatch) {
+                    if (!map.hasLayer(marker)) {
+                        marker.addTo(map);
+                    }
+                } else {
+                    if (map.hasLayer(marker)) {
+                        map.removeLayer(marker);
+                    }
+                }
+            });
+
+            updateStats();
+        }
+
+        // Boundaries toggle
+        let boundariesVisible = true;
+        document.getElementById('toggle-boundaries').addEventListener('click', () => {
+            if (boundariesVisible) {
+                map.removeLayer(boundariesLayer);
+                document.getElementById('toggle-boundaries').textContent = 'Show Country Borders';
+            } else {
+                map.addLayer(boundariesLayer);
+                document.getElementById('toggle-boundaries').textContent = 'Hide Country Borders';
+            }
+            boundariesVisible = !boundariesVisible;
+        });
+
+        // Initial stats update
+        updateStats();
+    </script>
+</body>
+</html>
