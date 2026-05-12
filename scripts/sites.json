@@ -26,9 +26,13 @@
     },
     "Storytelling for Impact": {
       "color": "#f97316",
-      "external": [
-        { "url": "https://storytelling-for-impact.vercel.app", "name": "STFI App", "icon": "📖", "desc": "Full Storytelling for Impact learning experience app.", "tag": "app" }
-      ]
+      "repos": {
+        "Storytelling-for-Impact": {
+          "pages": [
+            { "path": "stfi-interactive-workbook.html", "name": "STFI Interactive Workbook", "icon": "📖", "desc": "Full Storytelling for Impact learning experience app.", "tag": "app" }
+          ]
+        }
+      }
     },
     "WISE Scales": {
       "color": "#00c9a7",
