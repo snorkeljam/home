@@ -18,6 +18,7 @@
       "repos": {
         "jlx-conference-framework": {
           "pages": [
+            { "path": "index.html",                   "name": "JLX Conference Framework",  "icon": "🎤", "desc": "Hub for the JLX Durable Skills conference framework.", "tag": "hub" },
             { "path": "JLX_NYC_Summit_Brief.html",    "name": "JLX NYC Summit Brief",      "icon": "📋", "desc": "Summit brief for the JLX NYC Durable Skills event.", "tag": "report" },
             { "path": "jlx_venn_interactive_v3.html", "name": "JLX Venn Interactive",      "icon": "⭕", "desc": "Interactive Venn diagram for the Durable Skills framework.", "tag": "interactive" }
           ]
