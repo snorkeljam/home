@@ -18,9 +18,10 @@
       "repos": {
         "jlx-conference-framework": {
           "pages": [
-            { "path": "index.html",                   "name": "JLX Conference Framework",  "icon": "🎤", "desc": "Hub for the JLX Durable Skills conference framework.", "tag": "hub" },
-            { "path": "JLX_NYC_Summit_Brief.html",    "name": "JLX NYC Summit Brief",      "icon": "📋", "desc": "Summit brief for the JLX NYC Durable Skills event.", "tag": "report" },
-            { "path": "jlx_venn_interactive_v3.html", "name": "JLX Venn Interactive",      "icon": "⭕", "desc": "Interactive Venn diagram for the Durable Skills framework.", "tag": "interactive" }
+            { "path": "index.html",                   "name": "JLX Convening Cross-Sector Learning Professionals", "icon": "🎤", "desc": "Hub for the JLX cross-sector learning professionals convening — survey, results, and summit.", "tag": "hub" },
+            { "path": "results.html",                 "name": "Explore the Results",                               "icon": "📊", "desc": "Interactive findings from the Spring 2026 skills survey — rankings, perception gap, and open-text themes.", "tag": "findings" },
+            { "path": "JLX_NYC_Summit_Brief.html",    "name": "JLX NYC Summit Brief",                              "icon": "📋", "desc": "Summit brief for the JLX NYC Durable Skills event.", "tag": "report" },
+            { "path": "jlx_venn_interactive_v3.html", "name": "JLX Venn Interactive",                              "icon": "⭕", "desc": "Interactive Venn diagram for the Durable Skills framework.", "tag": "interactive" }
           ]
         }
       }
